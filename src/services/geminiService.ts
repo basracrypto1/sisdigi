@@ -1,7 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 const getApiKey = () => {
-  const key = import.meta.env.VITE_GEMINI_API_KEY;
+  const key = process.env.GEMINI_API_KEY;
   if (!key) {
     // Note: In this environment, GEMINI_API_KEY is usually injected by the platform.
     // If it's missing, it could be a configuration issue in the platform.

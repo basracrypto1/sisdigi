@@ -42,7 +42,19 @@ export default function App() {
   useEffect(() => {
     // Initial fetch
     fetchHistory();
+    
+    // Show greeting on first load of session
+    const hasSeenGreeting = sessionStorage.getItem('hasSeenGreeting');
+    if (!hasSeenGreeting) {
+      const timer = setTimeout(() => setShowGreetings(true), 1000);
+      return () => clearTimeout(timer);
+    }
   }, []);
+
+  const closeGreeting = () => {
+    setShowGreetings(false);
+    sessionStorage.setItem('hasSeenGreeting', 'true');
+  };
 
   const fetchHistory = () => {
     const saved = localStorage.getItem('surt_history');
@@ -295,6 +307,80 @@ export default function App() {
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
+      {/* Greetings Popup - Upgraded Premium Design */}
+      <AnimatePresence>
+        {showGreetings && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-ink/80 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="bg-paper p-1 rounded-[40px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] max-w-[400px] w-full relative overflow-hidden group"
+            >
+              {/* Inner Decorative Border */}
+              <div className="border border-line/30 rounded-[39px] p-8 flex flex-col items-center text-center">
+                
+                {/* Floating Hearts Animation */}
+                <div className="relative mb-8">
+                  <div className="absolute inset-0 bg-accent/20 blur-2xl rounded-full scale-150 animate-pulse" />
+                  <div className="relative z-10 w-20 h-20 bg-paper border border-line flex items-center justify-center rounded-3xl rotate-12 group-hover:rotate-0 transition-transform duration-500 shadow-sm">
+                    <Heart className="w-10 h-10 text-accent fill-accent/10" strokeWidth={1.5} />
+                  </div>
+                </div>
+
+                <div className="space-y-2 mb-6">
+                  <span className="text-[10px] font-bold text-accent uppercase tracking-[4px]">Pesan Untukmu</span>
+                  <h2 className="text-3xl font-black text-ink leading-tight tracking-tighter">
+                    SALAM <br /> HANGAT !
+                  </h2>
+                </div>
+
+                <div className="h-px w-12 bg-accent/30 mb-6" />
+
+                <div className="text-ink/60 font-medium leading-relaxed mb-8 px-4">
+                  <p className="text-sm">
+                    Semoga Kita Semua Sehat <br /> 
+                    Dan Lancar Rezekinya.
+                  </p>
+                </div>
+
+                <button 
+                  onClick={closeGreeting}
+                  className="w-full relative group/btn"
+                >
+                  <div className="absolute inset-0 bg-accent rounded-2xl blur-md opacity-20 group-hover/btn:opacity-40 transition-opacity" />
+                  <div className="relative py-4 bg-ink text-paper rounded-2xl font-bold uppercase tracking-[2px] text-[11px] flex items-center justify-center gap-2 hover:bg-accent transition-all active:scale-[0.98]">
+                    Buka Aplikasi
+                  </div>
+                </button>
+
+                <div className="mt-8 pt-6 border-t border-line/30 w-full flex justify-center opacity-40">
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-[6px] uppercase tracking-[3px] font-bold">Digitalization by</span>
+                    <span className="text-[8px] font-bold">FAHRUL ANAM</span>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={closeGreeting}
+                  className="absolute top-6 right-6 p-2 text-ink/20 hover:text-ink transition-colors hover:bg-ink/5 rounded-full"
+                  aria-label="Close"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Texture/Noise Background Overlay (subtle) */}
+              <div className="absolute inset-0 pointer-events-none opacity-[0.03] mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]" />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

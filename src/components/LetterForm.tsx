@@ -222,7 +222,7 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
   ];
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div id="form-top" className="flex flex-col h-full overflow-hidden">
       {/* Brand & Global Actions */}
       <div className="flex items-center justify-between mb-8 flex-shrink-0">
         <div className="flex flex-col">
@@ -252,9 +252,14 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
         <div className="relative">
           <select
             value={activeSection}
-            onChange={(e) => setActiveSection(e.target.value as FormSection)}
-            className="w-full appearance-none py-4 pl-12 pr-12 bg-white border border-line rounded-2xl font-bold text-[11px] uppercase tracking-[1px] text-ink/80 hover:border-accent/40 focus:border-accent focus:ring-4 focus:ring-accent/5 outline-none cursor-pointer transition-all duration-300 shadow-[0_2px_15px_-5px_rgba(0,0,0,0.05)] hover:shadow-xl hover:shadow-accent/5 group-hover:-translate-y-0.5"
+            onChange={(e) => {
+              setActiveSection(e.target.value as FormSection);
+              const element = document.getElementById('form-top');
+              element?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="w-full appearance-none py-4 pl-12 pr-12 bg-white border border-line rounded-2xl font-bold text-[11px] uppercase tracking-[1px] text-ink/80 hover:border-accent/40 focus:border-accent focus:ring-4 focus:ring-accent/5 outline-none cursor-pointer transition-all duration-300 shadow-[0_2px_15px_-5px_rgba(0,0,0,0.05)] hover:shadow-xl hover:shadow-accent/5"
           >
+
             {sections.map((s) => (
               <option key={s.id} value={s.id} className="font-bold py-2">
                 {s.label}
@@ -334,17 +339,17 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
 
                   <div>
                     <label className={labelStyle}>Tipe Dokumen</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                      {(['admin', 'job_application', 'cv', 'sppd', 'agreement'] as const).map(t => (
-                        <button
-                          key={t}
-                          onClick={() => onChange({ ...data, type: t })}
-                          className={`py-2 px-1 rounded-lg border text-[9px] font-bold uppercase tracking-wider transition-all ${data.type === t ? 'bg-ink text-paper border-ink shadow-lg shadow-ink/20' : 'bg-white border-line text-ink/40 hover:border-accent/30'}`}
-                        >
-                          {t === 'admin' ? 'Desa' : t === 'job_application' ? 'Lamaran' : t === 'sppd' ? 'SPPD' : t === 'cv' ? 'CV' : 'Perjanjian'}
-                        </button>
-                      ))}
-                    </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
+                        {(['admin', 'job_application', 'cv', 'sppd', 'agreement'] as const).map(t => (
+                          <button
+                            key={t}
+                            onClick={() => onChange({ ...data, type: t })}
+                            className={`py-2.5 px-0.5 rounded-lg border text-[8.5px] font-black uppercase transition-all ${data.type === t ? 'bg-ink text-paper border-ink shadow-lg shadow-ink/20' : 'bg-white border-line text-ink/40 hover:border-accent/30'}`}
+                          >
+                            {t === 'admin' ? 'Desa' : t === 'job_application' ? 'Lamaran' : t === 'sppd' ? 'SPPD' : t === 'cv' ? 'CV' : 'Perjanjian'}
+                          </button>
+                        ))}
+                      </div>
                   </div>
 
                   <div>
@@ -487,6 +492,18 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                       <label className={labelStyle}>Pekerjaan saat ini</label>
                       <input type="text" name="pekerjaan" value={data.pekerjaan} onChange={handleChange} className={inputStyle} />
                     </div>
+                    {data.type === 'sppd' && (
+                      <>
+                        <div>
+                          <label className={labelStyle}>Pangkat / Golongan</label>
+                          <input type="text" name="pangkatPenerima" value={data.pangkatPenerima} onChange={handleChange} className={inputStyle} />
+                        </div>
+                        <div>
+                          <label className={labelStyle}>NIP (Jika Ada)</label>
+                          <input type="text" name="nipPenerima" value={data.nipPenerima} onChange={handleChange} className={inputStyle} />
+                        </div>
+                      </>
+                    )}
                   </div>
                   <div>
                     <label className={labelStyle}>Alamat Lengkap</label>
@@ -650,6 +667,25 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                       value={data.bebanAnggaran}
                       onChange={(e) => onChange({ ...data, bebanAnggaran: e.target.value })}
                       className={inputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelStyle}>Tingkat Biaya</label>
+                    <input
+                      type="text"
+                      value={data.tingkatBiaya}
+                      onChange={(e) => onChange({ ...data, tingkatBiaya: e.target.value })}
+                      className={inputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelStyle}>Lamanya Perjalanan</label>
+                    <input
+                      type="text"
+                      value={data.lamanyaPerjalanan}
+                      onChange={(e) => onChange({ ...data, lamanyaPerjalanan: e.target.value })}
+                      className={inputStyle}
+                      placeholder="Contoh: 3 (Tiga) Hari"
                     />
                   </div>
                 </div>

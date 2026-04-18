@@ -73,9 +73,9 @@ const generateAdminWord = async (data: LetterData) => {
               width: { size: 70, type: WidthType.PERCENTAGE },
               verticalAlign: VerticalAlign.CENTER,
               children: [
-                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `PEMERINTAH KABUPATEN ${data.kabupaten.toUpperCase()}`, bold: true, size: 28, font: "Bookman Old Style" })] }),
-                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `KECAMATAN ${data.kecamatan.toUpperCase()}`, bold: true, size: 28, font: "Bookman Old Style" })] }),
-                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `DESA ${data.desa.toUpperCase()}`, bold: true, size: 32, font: "Bookman Old Style" })] }),
+                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `PEMERINTAH KABUPATEN ${data.kabupaten.toUpperCase()}`, bold: true, size: 32, font: "Bookman Old Style" })] }),
+                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `KECAMATAN ${data.kecamatan.toUpperCase()}`, bold: true, size: 32, font: "Bookman Old Style" })] }),
+                new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `DESA ${data.desa.toUpperCase()}`, bold: true, size: 24, font: "Bookman Old Style" })] }),
                 new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.alamatDesa, size: 20, font: "Bookman Old Style" })] }),
               ],
             }),
@@ -84,9 +84,10 @@ const generateAdminWord = async (data: LetterData) => {
         }),
       ],
     }),
-    new Paragraph({ border: { bottom: { color: "000000", space: 1, style: BorderStyle.DOUBLE, size: 24 } }, children: [] }),
+    new Paragraph({ border: { bottom: { color: "000000", space: 1, style: BorderStyle.SINGLE, size: 24 } }, children: [] }),
+    new Paragraph({ border: { bottom: { color: "000000", space: 1, style: BorderStyle.SINGLE, size: 6 } }, children: [] }),
     new Paragraph({ children: [new TextRun("")] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.judulSurat.toUpperCase(), bold: true, underline: {}, size: 28, font: "Bookman Old Style" })] }),
+    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.judulSurat.toUpperCase(), bold: true, underline: {}, size: 24, font: "Bookman Old Style" })] }),
     new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `Nomor: ${data.nomorSurat}`, size: 24, font: "Bookman Old Style" })] }),
     new Paragraph({ children: [new TextRun("")] }),
     new Paragraph({
@@ -302,7 +303,7 @@ const generateJobApplicationWord = async (data: LetterData) => {
   const sectionChildren: any[] = [];
   sectionChildren.push(
     new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: `${data.alamat.split(',')[0]}, ${formatDate(data.tanggalSurat)}`, size: 24, font: "Times New Roman" })], spacing: { after: 400 } }),
-    new Paragraph({ children: [new TextRun({ text: "Perihal: Lamaran Pekerjaan", size: 24, font: "Times New Roman", bold: true })], spacing: { after: 400 } }),
+    new Paragraph({ children: [new TextRun({ text: "Perihal: Lamaran Pekerjaan", size: 24, font: "Times New Roman" })], spacing: { after: 400 } }),
     new Paragraph({ children: [new TextRun({ text: "Kepada Yth,\nHRD Departemen\n" + (data.perusahaanTujuan || 'Pimpinan Perusahaan') + "\nDi Tempat", size: 24, font: "Times New Roman" })], spacing: { after: 400 } }),
     new Paragraph({ children: [new TextRun({ text: "Dengan hormat,", size: 24, font: "Times New Roman" })], spacing: { after: 200 } }),
     new Paragraph({ alignment: AlignmentType.BOTH, indent: { firstLine: 720 }, children: [new TextRun({ text: `Saya yang bertanda tangan di bawah ini bermaksud melamar posisi ${data.posisiDilamar || 'Karyawan'} di perusahaan yang Bapak/Ibu pimpin. Berikut data diri saya:`, size: 24, font: "Times New Roman" })], spacing: { after: 300 } }),
@@ -351,47 +352,116 @@ const generateCVWord = async (data: LetterData) => {
 
 const generateSPPDWord = async (data: LetterData) => {
   const sectionChildren: any[] = [];
+  
+  // Custom SPPD Content with Boxed Table
   sectionChildren.push(
-    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "SURAT PERINTAH PERJALANAN DINAS (SPPD)", bold: true, size: 28, font: "Bookman Old Style", underline: {} })], spacing: { after: 400 } }),
-    new Paragraph({ children: [new TextRun({ text: "I. IDENTITAS PENERIMA PERINTAH", bold: true, size: 20, font: "Bookman Old Style" })], spacing: { before: 200, after: 100 } }),
+    new Paragraph({ 
+      alignment: AlignmentType.CENTER, 
+      children: [new TextRun({ text: "SURAT PERINTAH PERJALANAN DINAS", bold: true, size: 28, font: "Bookman Old Style", underline: {} })],
+      spacing: { after: 100 } 
+    }),
+    new Paragraph({ 
+      alignment: AlignmentType.CENTER, 
+      children: [new TextRun({ text: `Nomor : ${data.nomorSurat}`, size: 24, font: "Bookman Old Style" })],
+      spacing: { after: 400 } 
+    }),
+
     new Table({
       width: { size: 100, type: WidthType.PERCENTAGE },
-      borders: {
-        top: { style: BorderStyle.NONE, size: 0, color: "auto" },
-        bottom: { style: BorderStyle.NONE, size: 0, color: "auto" },
-        left: { style: BorderStyle.NONE, size: 0, color: "auto" },
-        right: { style: BorderStyle.NONE, size: 0, color: "auto" },
-        insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "auto" },
-        insideVertical: { style: BorderStyle.NONE, size: 0, color: "auto" },
-      },
       rows: [
-        createDataRow("Nama Lengkap", data.nama.toUpperCase()),
-        createDataRow("NIK", data.nik),
-        createDataRow("Jabatan/Pangkat", data.pekerjaan),
+        // 1
+        new TableRow({
+          children: [
+            new TableCell({ width: { size: 5, type: WidthType.PERCENTAGE }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "1", bold: true, size: 22 })] })] }),
+            new TableCell({ width: { size: 35, type: WidthType.PERCENTAGE }, children: [new Paragraph({ children: [new TextRun({ text: "Pejabat Berwenang yang memberi perintah", size: 22 })] })] }),
+            new TableCell({ width: { size: 60, type: WidthType.PERCENTAGE }, children: [new Paragraph({ children: [new TextRun({ text: `${data.namaKades.toUpperCase()} / ${data.jabatanKades}`, bold: true, size: 22 })] })] }),
+          ]
+        }),
+        // 2
+        new TableRow({
+          children: [
+            new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "2", bold: true, size: 22 })] })] }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Nama / NIP Pegawai yang diperintah", size: 22 })] })] }),
+            new TableCell({ children: [
+              new Paragraph({ children: [new TextRun({ text: data.nama.toUpperCase(), bold: true, underline: {}, size: 22 })] }),
+              new Paragraph({ children: [new TextRun({ text: `NIP: ${data.nipPenerima || '-'}`, size: 18 })] }),
+            ] }),
+          ]
+        }),
+        // 3
+        new TableRow({
+          children: [
+            new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "3", bold: true, size: 22 })] })] }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "a. Pangkat dan Golongan\nb. Jabatan / Instansi", size: 22 })] })] }),
+            new TableCell({ children: [
+              new Paragraph({ children: [new TextRun({ text: `a. ${data.pangkatPenerima || '-'}`, size: 22 })] }),
+              new Paragraph({ children: [new TextRun({ text: `b. ${data.pekerjaan}`, size: 22 })] }),
+            ] }),
+          ]
+        }),
+        // 4
+        new TableRow({
+          children: [
+            new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "4", bold: true, size: 22 })] })] }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Maksud Perjalanan Dinas", size: 22 })] })] }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: data.keperluan, size: 22 })] })] }),
+          ]
+        }),
+        // 5
+        new TableRow({
+          children: [
+            new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "5", bold: true, size: 22 })] })] }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Alat Angkut yang dipergunakan", size: 22 })] })] }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: data.kendaraan || '-', size: 22 })] })] }),
+          ]
+        }),
+        // 6
+        new TableRow({
+          children: [
+            new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "6", bold: true, size: 22 })] })] }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "a. Tempat Berangkat\nb. Tempat Tujuan", size: 22 })] })] }),
+            new TableCell({ children: [
+              new Paragraph({ children: [new TextRun({ text: `a. Desa ${data.desa}`, size: 22 })] }),
+              new Paragraph({ children: [new TextRun({ text: `b. ${data.tujuanPerjalanan || '-'}`, size: 22 })] }),
+            ] }),
+          ]
+        }),
+        // 7
+        new TableRow({
+          children: [
+            new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "7", bold: true, size: 22 })] })] }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "a. Lamanya Perjalanan Dinas\nb. Tanggal Berangkat\nc. Tanggal Kembali", size: 22 })] })] }),
+            new TableCell({ children: [
+              new Paragraph({ children: [new TextRun({ text: `a. ${data.lamanyaPerjalanan || '-'}`, size: 22 })] }),
+              new Paragraph({ children: [new TextRun({ text: `b. ${formatDate(data.tanggalBerangkat || '')}`, size: 22 })] }),
+              new Paragraph({ children: [new TextRun({ text: `c. ${formatDate(data.tanggalKembali || '')}`, size: 22 })] }),
+            ] }),
+          ]
+        }),
+        // 8
+        new TableRow({
+          children: [
+            new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "8", bold: true, size: 22 })] })] }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Pembebanan Anggaran\na. Instansi\nb. Mata Anggaran", size: 22 })] })] }),
+            new TableCell({ children: [
+              new Paragraph({ children: [new TextRun({ text: `a. Pemerintah Desa ${data.desa}`, size: 22 })] }),
+              new Paragraph({ children: [new TextRun({ text: `b. ${data.bebanAnggaran || '-'}`, size: 22 })] }),
+            ] }),
+          ]
+        }),
+        // 9
+        new TableRow({
+          children: [
+            new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "9", bold: true, size: 22 })] })] }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Keterangan Lain-lain", size: 22 })] })] }),
+            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: data.narasiSurat, size: 22, italics: true })] })] }),
+          ]
+        }),
       ]
     }),
-    new Paragraph({ children: [new TextRun({ text: "II. RINCIAN PERJALANAN", bold: true, size: 20, font: "Bookman Old Style" })], spacing: { before: 300, after: 100 } }),
-    new Table({
-      width: { size: 100, type: WidthType.PERCENTAGE },
-      borders: {
-        top: { style: BorderStyle.NONE, size: 0, color: "auto" },
-        bottom: { style: BorderStyle.NONE, size: 0, color: "auto" },
-        left: { style: BorderStyle.NONE, size: 0, color: "auto" },
-        right: { style: BorderStyle.NONE, size: 0, color: "auto" },
-        insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "auto" },
-        insideVertical: { style: BorderStyle.NONE, size: 0, color: "auto" },
-      },
-      rows: [
-        createDataRow("Maksud Perjalanan", data.keperluan),
-        createDataRow("Tujuan", data.tujuanPerjalanan || '-'),
-        createDataRow("Kendaraan", data.kendaraan || '-'),
-        createDataRow("Beban Anggaran", data.bebanAnggaran || '-'),
-        createDataRow("Tgl Berangkat", formatDate(data.tanggalBerangkat || '')),
-        createDataRow("Tgl Kembali", formatDate(data.tanggalKembali || '')),
-      ]
-    }),
-    new Paragraph({ children: [new TextRun({ text: "III. INSTRUKSI", bold: true, size: 20, font: "Bookman Old Style" })], spacing: { before: 300, after: 100 } }),
-    new Paragraph({ alignment: AlignmentType.BOTH, children: [new TextRun({ text: data.narasiSurat, size: 24, font: "Bookman Old Style" })], spacing: { after: 600 } }),
+
+    new Paragraph({ text: "", spacing: { before: 800 } }),
+
     new Table({
       width: { size: 100, type: WidthType.PERCENTAGE },
       borders: {
@@ -406,18 +476,21 @@ const generateSPPDWord = async (data: LetterData) => {
         new TableRow({
           children: [
             new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: [
-              new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Pejabat Berwenang,", size: 24, font: "Bookman Old Style" })] }),
+              new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Penerima Perintah,", size: 24, font: "Bookman Old Style" })] }),
+              new Paragraph({ children: [new TextRun("")] }),
+              new Paragraph({ children: [new TextRun("")] }),
+              new Paragraph({ children: [new TextRun("")] }),
+              new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.nama.toUpperCase(), bold: true, underline: {}, size: 24, font: "Bookman Old Style" })] }),
+            ]}),
+            new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: [
+              new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `Dikeluarkan di : ${data.desa}`, size: 22, font: "Bookman Old Style" })] }),
+              new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `Pada tanggal : ${formatDate(data.tanggalSurat)}`, size: 22, font: "Bookman Old Style" })] }),
+              new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Pejabat Berwenang,", bold: true, underline: {}, size: 24, font: "Bookman Old Style" })], spacing: { before: 200 } }),
+              new Paragraph({ children: [new TextRun("")] }),
               new Paragraph({ children: [new TextRun("")] }),
               new Paragraph({ children: [new TextRun("")] }),
               new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.namaKades.toUpperCase(), bold: true, underline: {}, size: 24, font: "Bookman Old Style" })] }),
               new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.jabatanKades, size: 18, font: "Bookman Old Style" })] }),
-            ]}),
-            new TableCell({ width: { size: 50, type: WidthType.PERCENTAGE }, children: [
-              new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `${data.desa}, ${formatDate(data.tanggalSurat)}`, size: 24, font: "Bookman Old Style" })] }),
-              new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Penerima Perintah,", size: 24, font: "Bookman Old Style" })] }),
-              new Paragraph({ children: [new TextRun("")] }),
-              new Paragraph({ children: [new TextRun("")] }),
-              new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.nama.toUpperCase(), bold: true, underline: {}, size: 24, font: "Bookman Old Style" })] }),
             ]}),
           ]
         })
@@ -431,7 +504,7 @@ const generateAgreementWord = async (data: LetterData) => {
   const sectionChildren: any[] = [];
   
   sectionChildren.push(
-    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.judulSurat.toUpperCase(), bold: true, underline: {}, size: 32, font: "Times New Roman" })], spacing: { after: 100 } }),
+    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.judulSurat.toUpperCase(), bold: true, underline: {}, size: 24, font: "Times New Roman" })], spacing: { after: 100 } }),
     new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `Nomor: ${data.nomorSurat}`, size: 24, font: "Times New Roman" })], spacing: { after: 400 } }),
   );
 

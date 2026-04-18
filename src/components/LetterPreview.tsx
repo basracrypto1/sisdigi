@@ -84,16 +84,21 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
 
   const AdminLayout = () => (
     <div className="space-y-6">
-      <div className="relative text-center border-b-[3px] border-double border-ink pb-2 mb-8 group/header">
-        {data.logoKabupaten && (
-          <div className="absolute left-0 top-0 h-24 w-24 flex items-center justify-center">
+      <div className="relative flex flex-col items-center border-b-[4px] border-ink pb-2 mb-8 group/header">
+        <div className="absolute left-0 top-0 h-28 w-28 flex items-center justify-center">
+          {data.logoKabupaten ? (
             <img src={data.logoKabupaten} alt="Logo" className="max-h-full max-w-full object-contain" referrerPolicy="no-referrer" />
-          </div>
-        )}
-        <h3 className="text-[14pt] font-bold uppercase">Pemerintah Kabupaten <EditableSpan field="kabupaten" value={data.kabupaten} /></h3>
-        <h3 className="text-[14pt] font-bold uppercase">Kecamatan <EditableSpan field="kecamatan" value={data.kecamatan} /></h3>
-        <h2 className="text-[14pt] font-extrabold uppercase mt-1">Desa <EditableSpan field="desa" value={data.desa} /></h2>
-        <p className="text-[11pt] mt-2 opacity-80 font-sans italic"><EditableSpan field="alamatDesa" value={data.alamatDesa} /></p>
+          ) : (
+            <div className="w-20 h-20 border-2 border-dashed border-ink/20 rounded-full flex items-center justify-center text-[8px] text-ink/20 font-bold uppercase text-center p-2">Logo Kab</div>
+          )}
+        </div>
+        <div className="text-center flex flex-col items-center">
+          <h3 className="text-[16pt] leading-tight font-bold uppercase tracking-wide">Pemerintah Kabupaten <EditableSpan field="kabupaten" value={data.kabupaten} /></h3>
+          <h3 className="text-[16pt] leading-tight font-bold uppercase tracking-wide">Kecamatan <EditableSpan field="kecamatan" value={data.kecamatan} /></h3>
+          <h2 className="text-[12pt] leading-tight font-black uppercase mt-1 tracking-wider">Desa <EditableSpan field="desa" value={data.desa} /></h2>
+          <p className="text-[10pt] mt-2 opacity-80 font-sans italic tracking-tight"><EditableSpan field="alamatDesa" value={data.alamatDesa} /></p>
+        </div>
+        <div className="w-full h-[1.5px] bg-ink mt-1" />
         
         {onSwitchToEdit && (
           <button 
@@ -106,25 +111,25 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
       </div>
 
       <div className="text-center mb-10 group/header relative">
-        <h1 className="text-[14pt] font-bold underline uppercase"><EditableSpan field="judulSurat" value={data.judulSurat} /></h1>
-        <p className="text-[12pt] mt-1">Nomor: <EditableSpan field="nomorSurat" value={data.nomorSurat || '...'} /></p>
+        <h1 className="text-[12pt] font-bold underline uppercase underline-offset-4 decoration-2"><EditableSpan field="judulSurat" value={data.judulSurat} /></h1>
+        <p className="text-[12pt] mt-1 font-normal italic">Nomor: <EditableSpan field="nomorSurat" value={data.nomorSurat || '...'} /></p>
         {onSwitchToEdit && (
           <button 
             onClick={() => onSwitchToEdit('umum')}
-            className="absolute -top-4 -right-4 opacity-0 group-hover/header:opacity-100 p-1.5 bg-accent/10 text-accent rounded-full transition-all"
+            className="absolute -top-4 -right-4 opacity-0 group-hover/header:opacity-100 p-1.5 bg-accent/10 text-accent rounded-full transition-all shadow-sm"
           >
             <Edit3 className="w-3 h-3" />
           </button>
         )}
       </div>
 
-      <div className="group/header relative">
-        <p className="indent-[1.25cm]">Kepala Desa <EditableSpan field="desa" value={data.desa} />, Kecamatan <EditableSpan field="kecamatan" value={data.kecamatan} />, Kabupaten <EditableSpan field="kabupaten" value={data.kabupaten} />, menerangkan bahwa:</p>
-        <div className="pl-10">
+      <div className="group/header relative leading-relaxed">
+        <p className="text-justify indent-[1.25cm]">Kepala Desa <EditableSpan field="desa" value={data.desa} />, Kecamatan <EditableSpan field="kecamatan" value={data.kecamatan} />, Kabupaten <EditableSpan field="kabupaten" value={data.kabupaten} />, menerangkan dengan sebenarnya bahwa:</p>
+        <div className="pl-10 mt-4">
           <table className="w-full">
             <tbody>
-              <tr><td className="w-[180px] py-1">Nama Lengkap</td><td className="w-[10px]">:</td><td className="uppercase"><EditableSpan field="nama" value={data.nama} /></td></tr>
-              <tr><td className="py-1">NIK</td><td>:</td><td><EditableSpan field="nik" value={data.nik} /></td></tr>
+              <tr><td className="w-[200px] py-1">Nama Lengkap</td><td className="w-[10px]">:</td><td className="uppercase font-bold tracking-wide"><EditableSpan field="nama" value={data.nama} /></td></tr>
+              <tr><td className="py-1">NIK</td><td>:</td><td className="font-mono text-[11pt]"><EditableSpan field="nik" value={data.nik} /></td></tr>
               <tr><td className="py-1">Tempat, Tgl Lahir</td><td>:</td><td><EditableSpan field="tempatLahir" value={data.tempatLahir} />, {formatDateIndo(data.tanggalLahir)}</td></tr>
               <tr><td className="py-1">Jenis Kelamin</td><td>:</td><td>{data.jenisKelamin}</td></tr>
               <tr><td className="py-1">Pekerjaan</td><td>:</td><td><EditableSpan field="pekerjaan" value={data.pekerjaan} /></td></tr>
@@ -142,8 +147,8 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
         )}
       </div>
 
-      <div className="group/header relative">
-        <EditableDiv field="narasiSurat" value={data.narasiSurat} className="indent-[1.25cm] text-justify mb-4" />
+      <div className="group/header relative mt-6">
+        <EditableDiv field="narasiSurat" value={data.narasiSurat} className="indent-[1.25cm] text-justify leading-relaxed mb-4" />
         {onSwitchToEdit && (
           <button 
             onClick={() => onSwitchToEdit('isi')}
@@ -153,6 +158,7 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
           </button>
         )}
       </div>
+
 
       {/* Detail Jual Beli / Objek if relevant */}
       {(data.detailObjek || data.hargaJualBeli) && (
@@ -289,7 +295,7 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
       </div>
 
       <div className="mb-8 group/header relative">
-        <p className="font-bold">Perihal: Lamaran Pekerjaan</p>
+        <p className="">Perihal: Lamaran Pekerjaan</p>
         {onSwitchToEdit && (
           <button 
             onClick={() => onSwitchToEdit('umum')}
@@ -433,67 +439,138 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
   );
 
   const SPPDLayout = () => (
-    <div className="font-serif text-sm">
-      <h1 className="text-center text-xl font-bold underline mb-8">SURAT PERINTAH PERJALANAN DINAS (SPPD)</h1>
-      
-      <div className="mb-8 pl-8 group/header relative border-l-2 border-line">
-        <p className="mb-4 font-bold text-accent uppercase tracking-widest text-[10px]">I. Pemberi Perintah</p>
-        <table className="w-full mb-6">
-          <tbody>
-            <tr><td className="w-48 py-1">Pejabat Berwenang</td><td className="w-4">:</td><td className="font-bold">{data.namaKades}</td></tr>
-            <tr><td className="py-1">Jabatan</td><td>:</td><td>{data.jabatanKades}</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div className="mb-8 pl-8 group/header relative border-l-2 border-line">
-        <p className="mb-4 font-bold text-accent uppercase tracking-widest text-[10px]">II. Penerima Perintah</p>
-        <table className="w-full mb-6">
-          <tbody>
-            <tr><td className="w-48 py-1">Nama / NIK</td><td className="w-4">:</td><td><span className="underline"><EditableSpan field="nama" value={data.nama} /></span> / <EditableSpan field="nik" value={data.nik} /></td></tr>
-            <tr><td className="py-1">Pangkat / Jabatan</td><td>:</td><td><EditableSpan field="pekerjaan" value={data.pekerjaan} /></td></tr>
-          </tbody>
-        </table>
-        {onSwitchToEdit && (
-          <button onClick={() => onSwitchToEdit('penduduk')} className="absolute top-0 right-0 opacity-0 group-hover/header:opacity-100 p-2 bg-accent/10 text-accent rounded-full transition-all"><Edit3 className="w-4 h-4" /></button>
-        )}
-      </div>
-
-      <div className="mb-8 pl-8 group/header relative border-l-2 border-line">
-        <p className="mb-4 font-bold text-accent uppercase tracking-widest text-[10px]">III. Rincian Perjalanan</p>
-        <table className="w-full mb-6 italic">
-          <tbody>
-            <tr><td className="w-48 py-1">Maksud Perjalanan</td><td className="w-4">:</td><td><EditableSpan field="keperluan" value={data.keperluan} /></td></tr>
-            <tr><td className="py-1">Tempat Tujuan</td><td>:</td><td><EditableSpan field="tujuanPerjalanan" value={data.tujuanPerjalanan} /></td></tr>
-            <tr><td className="py-1">Alat Transportasi</td><td>:</td><td><EditableSpan field="kendaraan" value={data.kendaraan} /></td></tr>
-            <tr><td className="py-1">Beban Anggaran</td><td>:</td><td><EditableSpan field="bebanAnggaran" value={data.bebanAnggaran} /></td></tr>
-            <tr><td className="py-1">Tanggal Berangkat</td><td>:</td><td>{formatDateIndo(data.tanggalBerangkat)}</td></tr>
-            <tr><td className="py-1">Tanggal Kembali</td><td>:</td><td>{formatDateIndo(data.tanggalKembali)}</td></tr>
-          </tbody>
-        </table>
-        {onSwitchToEdit && (
-          <button onClick={() => onSwitchToEdit('sppd_detail')} className="absolute top-0 right-0 opacity-0 group-hover/header:opacity-100 p-2 bg-accent/10 text-accent rounded-full transition-all"><Edit3 className="w-4 h-4" /></button>
-        )}
-      </div>
-
-      <div className="mb-12 group/header relative">
-        <p className="font-bold italic mb-2">Instruksi / Catatan Tambahan:</p>
-        <EditableDiv field="narasiSurat" value={data.narasiSurat} className="pl-8 text-justify leading-relaxed" />
-        {onSwitchToEdit && (
-          <button onClick={() => onSwitchToEdit('isi')} className="absolute top-0 right-0 opacity-0 group-hover/header:opacity-100 p-2 bg-accent/10 text-accent rounded-full transition-all"><Edit3 className="w-4 h-4" /></button>
-        )}
-      </div>
-
-      <div className="grid grid-cols-2 gap-10 mt-20 pt-10 border-t border-line">
-        <div className="text-center">
-          <p className="mb-24">Pejabat Berwenang,</p>
-          <p className="font-bold underline uppercase">{data.namaKades}</p>
-          <p className="text-[10px] opacity-50 uppercase">{data.jabatanKades}</p>
+    <div className="font-serif text-ink">
+      <div className="flex justify-between items-start mb-6 border-b-2 border-ink pb-4">
+        <div className="flex items-center gap-4">
+          {data.logoKabupaten && (
+            <img 
+              src={data.logoKabupaten} 
+              alt="Logo" 
+              className="w-16 h-16 object-contain"
+              referrerPolicy="no-referrer"
+            />
+          )}
+          <div className="uppercase">
+            <h3 className="text-[12pt] font-bold leading-tight">Pemerintah Kabupaten {data.kabupaten}</h3>
+            <h3 className="text-[11pt] font-semibold leading-tight">Kecamatan {data.kecamatan}</h3>
+            <h2 className="text-[14pt] font-black leading-tight">Desa {data.desa}</h2>
+          </div>
         </div>
-        <div className="text-center">
-          <p>{data.desa}, {formatDateIndo(data.tanggalSurat)}</p>
-          <p className="mb-20 font-bold">Penerima Perintah,</p>
+        <div className="text-right text-[10pt] font-sans italic opacity-50 max-w-[200px]">
+          {data.alamatDesa}
+        </div>
+      </div>
+
+      <h1 className="text-center text-[14pt] font-bold underline mb-2">SURAT PERINTAH PERJALANAN DINAS</h1>
+      <p className="text-center text-[11pt] mb-8">Nomor : <EditableSpan field="nomorSurat" value={data.nomorSurat} /></p>
+      
+      <div className="border border-ink overflow-hidden mb-10">
+        <div className="grid grid-cols-12 border-b border-ink">
+          <div className="col-span-1 p-2 border-r border-ink flex items-center justify-center font-bold">1</div>
+          <div className="col-span-5 p-2 border-r border-ink">Pejabat Berwenang yang memberi perintah</div>
+          <div className="col-span-6 p-2 font-bold uppercase">{data.namaKades} / {data.jabatanKades}</div>
+        </div>
+        <div className="grid grid-cols-12 border-b border-ink">
+          <div className="col-span-1 p-2 border-r border-ink flex items-center justify-center font-bold">2</div>
+          <div className="col-span-5 p-2 border-r border-ink">Nama / NIP Pegawai yang diperintah</div>
+          <div className="col-span-6 p-2 group/field relative">
+            <p className="font-bold underline uppercase"><EditableSpan field="nama" value={data.nama} /></p>
+            <p className="text-xs">NIP: <EditableSpan field="nipPenerima" value={data.nipPenerima || '-'} /></p>
+            {onSwitchToEdit && (
+              <button 
+                onClick={() => onSwitchToEdit('penduduk')}
+                className="absolute top-1 right-1 opacity-0 group-hover/field:opacity-100 p-1 bg-accent/10 text-accent rounded-full"
+              >
+                <Edit3 className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+        </div>
+        <div className="grid grid-cols-12 border-b border-ink">
+          <div className="col-span-1 p-2 border-r border-ink flex items-center justify-center font-bold">3</div>
+          <div className="col-span-5 p-2 border-r border-ink">a. Pangkat dan Golongan <br/>b. Jabatan / Instansi</div>
+          <div className="col-span-6 p-2">
+            <p>a. <EditableSpan field="pangkatPenerima" value={data.pangkatPenerima || '-'} /></p>
+            <p>b. <EditableSpan field="pekerjaan" value={data.pekerjaan} /></p>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 border-b border-ink">
+          <div className="col-span-1 p-2 border-r border-ink flex items-center justify-center font-bold">4</div>
+          <div className="col-span-5 p-2 border-r border-ink">Maksud Perjalanan Dinas</div>
+          <div className="col-span-6 p-2 group/field relative">
+            <EditableSpan field="keperluan" value={data.keperluan} />
+            {onSwitchToEdit && (
+              <button onClick={() => onSwitchToEdit('isi')} className="absolute top-1 right-1 opacity-0 group-hover/field:opacity-100 p-1 bg-accent/10 text-accent rounded-full tracking-normal"><Edit3 className="w-3 h-3" /></button>
+            )}
+          </div>
+        </div>
+        <div className="grid grid-cols-12 border-b border-ink">
+          <div className="col-span-1 p-2 border-r border-ink flex items-center justify-center font-bold">5</div>
+          <div className="col-span-5 p-2 border-r border-ink">Alat Angkut yang dipergunakan</div>
+          <div className="col-span-6 p-2 group/field relative">
+            <EditableSpan field="kendaraan" value={data.kendaraan} />
+            {onSwitchToEdit && (
+              <button onClick={() => onSwitchToEdit('sppd_detail')} className="absolute top-1 right-1 opacity-0 group-hover/field:opacity-100 p-1 bg-accent/10 text-accent rounded-full tracking-normal"><Edit3 className="w-3 h-3" /></button>
+            )}
+          </div>
+        </div>
+        <div className="grid grid-cols-12 border-b border-ink">
+          <div className="col-span-1 p-2 border-r border-ink flex items-center justify-center font-bold">6</div>
+          <div className="col-span-5 p-2 border-r border-ink">a. Tempat Berangkat <br/>b. Tempat Tujuan</div>
+          <div className="col-span-6 p-2">
+            <p>a. Desa {data.desa}</p>
+            <p>b. <EditableSpan field="tujuanPerjalanan" value={data.tujuanPerjalanan} /></p>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 border-b border-ink">
+          <div className="col-span-1 p-2 border-r border-ink flex items-center justify-center font-bold">7</div>
+          <div className="col-span-5 p-2 border-r border-ink">a. Lamanya Perjalanan Dinas <br/>b. Tanggal Berangkat <br/>c. Tanggal Kembali</div>
+          <div className="col-span-6 p-2">
+            <p>a. <EditableSpan field="lamanyaPerjalanan" value={data.lamanyaPerjalanan || '...'} /></p>
+            <p>b. {formatDateIndo(data.tanggalBerangkat)}</p>
+            <p>c. {formatDateIndo(data.tanggalKembali)}</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 border-b border-ink">
+          <div className="col-span-1 p-2 border-r border-ink flex items-center justify-center font-bold">8</div>
+          <div className="col-span-5 p-2 border-r border-ink">Pembebanan Anggaran <br/>a. Instansi <br/>b. Mata Anggaran</div>
+          <div className="col-span-6 p-2">
+            <p>a. Pemerintah Desa {data.desa}</p>
+            <p>b. <EditableSpan field="bebanAnggaran" value={data.bebanAnggaran} /></p>
+          </div>
+        </div>
+        <div className="grid grid-cols-12">
+          <div className="col-span-1 p-2 border-r border-ink flex items-center justify-center font-bold">9</div>
+          <div className="col-span-5 p-2 border-r border-ink">Keterangan Lain-lain</div>
+          <div className="col-span-6 p-2 group/field relative">
+            <EditableDiv field="narasiSurat" value={data.narasiSurat} className="italic" />
+            {onSwitchToEdit && (
+              <button onClick={() => onSwitchToEdit('isi')} className="absolute top-1 right-1 opacity-0 group-hover/field:opacity-100 p-1 bg-accent/10 text-accent rounded-full tracking-normal"><Edit3 className="w-3 h-3" /></button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-20">
+        <div className="text-center group/sign relative">
+          <p className="mb-24">Penerima Perintah,</p>
           <p className="font-bold underline uppercase"><EditableSpan field="nama" value={data.nama} /></p>
+          {onSwitchToEdit && (
+            <button onClick={() => onSwitchToEdit('penduduk')} className="absolute top-0 right-0 opacity-0 group-hover/sign:opacity-100 p-1 bg-accent/10 text-accent rounded-full tracking-normal"><Edit3 className="w-3 h-3" /></button>
+          )}
+        </div>
+        <div className="text-center group/sign relative">
+          <p className="mb-2">Dikeluarkan di : {data.desa}</p>
+          <p className="mb-4">Pada tanggal : {formatDateIndo(data.tanggalSurat)}</p>
+          <p className="mb-20 font-bold underline">Pejabat Berwenang,</p>
+          <div className="relative inline-block">
+             <p className="font-bold underline uppercase">{data.namaKades}</p>
+             <p className="text-[10px] uppercase">{data.jabatanKades}</p>
+             {/* Stamp placeholder */}
+             <div className="absolute -top-16 -left-16 w-32 h-32 border-4 border-accent/20 rounded-full flex items-center justify-center rotate-[-15deg] pointer-events-none opacity-40">
+                <span className="text-accent/20 font-black text-[10px] uppercase text-center leading-tight">CAP BASAH<br/>DESA {data.desa.toUpperCase()}</span>
+             </div>
+          </div>
         </div>
       </div>
     </div>
@@ -562,12 +639,13 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
     <div 
       key={`${data.type}-${data.judulSurat}-${data.nama}`}
       id="printable-letter"
-      className="bg-paper p-12 shadow-2xl rounded-sm border border-line min-h-[297mm] mx-auto w-[210mm] relative group printable-content"
+      className="bg-paper p-12 shadow-2xl rounded-sm border border-line min-h-[297mm] mx-auto w-[210mm] relative group printable-content font-serif text-ink text-[12pt]"
       style={{
         backgroundImage: 'linear-gradient(to bottom, transparent 296.8mm, rgba(0,0,0,0.05) 296.8mm, rgba(0,0,0,0.05) 297mm, transparent 297mm)',
         backgroundSize: '100% 297mm'
       }}
     >
+
       {onUpdate && (
         <div className="absolute top-4 left-4 flex items-center gap-2 opacity-0 group-hover:opacity-40 transition-opacity text-[10px] text-ink uppercase tracking-widest font-bold z-10">
           <Edit3 className="w-3 h-3" /> Klik teks untuk mengedit langsung

@@ -28,3 +28,29 @@
     @apply bg-bg text-ink font-sans transition-colors duration-300;
   }
 }
+
+@layer utilities {
+  @media print {
+    body {
+      background: white !important;
+    }
+    .no-print {
+      display: none !important;
+    }
+    #printable-letter {
+      margin: 0 !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+      border: none !important;
+      width: 100% !important;
+    }
+    aside, main > .fixed, main > .flex-col > .fixed {
+      display: none !important;
+    }
+    main {
+      padding: 0 !important;
+      overflow: visible !important;
+      background: white !important;
+    }
+  }
+}

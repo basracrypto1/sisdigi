@@ -10,7 +10,7 @@ import { LetterPreview } from './components/LetterPreview';
 import { LetterHistory } from './components/LetterHistory';
 import { generateWordLetter } from './lib/wordGenerator';
 import { generateLetterNumber } from './lib/utils';
-import { Download, FileText, CheckCircle2, RefreshCw, History, Heart, X } from 'lucide-react';
+import { Download, FileText, CheckCircle2, RefreshCw, History, Heart, X, Printer } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
@@ -40,15 +40,8 @@ export default function App() {
   const formRef = useRef<LetterFormHandle>(null);
 
   useEffect(() => {
-    // Show greetings after 1.5s
-    const timer = setTimeout(() => {
-      setShowGreetings(true);
-    }, 1500);
-
     // Initial fetch
     fetchHistory();
-    
-    return () => clearTimeout(timer);
   }, []);
 
   const fetchHistory = () => {
@@ -159,8 +152,12 @@ export default function App() {
     }
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
-    <div className="flex flex-col lg:flex-row h-screen w-full bg-bg overflow-hidden font-sans">
+    <div className="flex flex-col lg:flex-row h-screen w-full bg-bg overflow-hidden font-sans no-print">
       {/* Mobile Tab Toggle */}
       <div className="lg:hidden flex border-b border-line bg-white flex-shrink-0 z-50">
         <button 
@@ -196,43 +193,42 @@ export default function App() {
         </div>
         
         {/* Action Buttons at bottom of sidebar */}
-        <div className="p-6 md:p-8 space-y-3 bg-paper/80 border-t border-line backdrop-blur-xl sticky bottom-0 z-10 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.05)]">
+        <div className="p-4 md:p-5 space-y-2 bg-bg/40 border-t border-line/30 backdrop-blur-md sticky bottom-0 z-10">
           <button
             onClick={() => setShowHistory(true)}
-            className="w-full h-12 flex items-center justify-center gap-2 bg-white border border-line text-ink rounded-xl font-bold text-[10px] tracking-widest hover:bg-ink hover:text-white active:scale-95 transition-all shadow-sm group"
+            className="w-full h-9 flex items-center justify-center gap-1.5 bg-white/50 border border-line text-ink/70 rounded-lg font-bold text-[9px] tracking-widest hover:bg-ink hover:text-white active:scale-95 transition-all group"
           >
-            <History className="w-4 h-4 group-hover:rotate-[-20deg] transition-transform" /> RIWAYAT SURAT
+            <History className="w-3.5 h-3.5 group-hover:rotate-[-20deg] transition-transform" /> RIWAYAT SURAT
           </button>
 
           <button
             onClick={handleDownload}
             disabled={isGenerating}
-            className="w-full h-14 flex items-center justify-center gap-3 bg-accent text-paper rounded-xl font-bold text-xs tracking-[2px] hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 shadow-xl shadow-accent/10 relative overflow-hidden group"
+            className="w-full h-11 flex items-center justify-center gap-2 bg-accent text-paper rounded-lg font-bold text-[10px] tracking-[1px] hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 shadow-lg shadow-accent/5 relative overflow-hidden group"
           >
             {isGenerating ? (
-              <RefreshCw className="w-5 h-5 animate-spin" />
+              <RefreshCw className="w-4 h-4 animate-spin" />
             ) : (
               <>
-                <Download className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
-                <span>UNDUH FILE WORD (.DOCX)</span>
+                <Download className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
+                <span>UNDUH FILE WORD</span>
               </>
             )}
           </button>
           
-          <div className="flex flex-col items-center gap-2 mt-4">
-            <p className="text-[9px] text-ink/30 italic font-medium">
-              *Rekomendasi cetak menggunakan browser desktop
-            </p>
-            
+          <div className="flex flex-col items-center px-1 pt-3 opacity-30 gap-1">
             <a 
               href="https://www.tiktok.com/@me.fahrulanam" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="group flex flex-col items-center gap-0.5"
+              className="flex flex-col items-center group"
             >
-              <span className="text-[8px] uppercase tracking-[3px] text-ink/20 font-bold group-hover:text-accent transition-colors">Digitalization by</span>
-              <span className="text-[10px] font-bold text-ink/40 group-hover:text-ink transition-colors">Fahrul Anam</span>
+              <span className="text-[7px] uppercase tracking-[3px] font-bold group-hover:text-accent transition-colors">Digitalization by</span>
+              <span className="text-[9px] font-bold text-ink transition-colors">FAHRUL <span className="text-accent underline decoration-accent/20 decoration-1 underline-offset-2">ANAM</span></span>
             </a>
+            <p className="text-[6px] tracking-tight font-medium uppercase mt-0.5">
+              Rekomendasi: Desktop Browser
+            </p>
           </div>
         </div>
       </aside>
@@ -292,55 +288,6 @@ export default function App() {
             onDelete={deleteFromHistory}
             onClose={() => setShowHistory(false)}
           />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showGreetings && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-ink/30 backdrop-blur-md"
-          >
-            <motion.div 
-              initial={{ scale: 0.9, y: 20, rotate: -2 }}
-              animate={{ scale: 1, y: 0, rotate: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-paper border-2 border-line rounded-[2rem] p-8 max-w-[320px] w-full relative shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] text-center group"
-            >
-              <button 
-                onClick={() => setShowGreetings(false)}
-                className="absolute -top-3 -right-3 w-10 h-10 bg-white border border-line rounded-full flex items-center justify-center text-ink/20 hover:text-red-500 hover:scale-110 active:scale-95 transition-all shadow-lg z-10"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              
-              <div className="w-16 h-16 bg-accent/5 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-700">
-                <Heart className="w-8 h-8 text-accent fill-accent animate-pulse" />
-              </div>
-              
-              <h3 className="font-display text-xl font-bold text-ink mb-3 tracking-tight leading-tight">
-                Salam Hangat!
-              </h3>
-              
-              <p className="text-ink/60 font-medium leading-relaxed font-sans text-sm">
-                Semoga kita selalu sehat dan lancar rezeki 🙏 <span className="text-accent font-extrabold underline decoration-accent/20 underline-offset-4">Amin.</span>
-              </p>
-
-              <div className="mt-8">
-                <button 
-                  onClick={() => setShowGreetings(false)}
-                  className="w-full py-4 bg-ink text-paper rounded-xl font-bold text-[10px] tracking-[3px] uppercase hover:bg-accent transition-all shadow-md active:scale-95"
-                >
-                  TUTUP PESAN
-                </button>
-              </div>
-              
-              <div className="absolute -bottom-2 -left-2 w-8 h-8 bg-accent/20 rounded-full blur-xl animate-pulse" />
-              <div className="absolute -top-2 -right-2 w-12 h-12 bg-accent/10 rounded-full blur-2xl animate-pulse delay-700" />
-            </motion.div>
-          </motion.div>
         )}
       </AnimatePresence>
 

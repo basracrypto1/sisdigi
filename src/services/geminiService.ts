@@ -1,7 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
 const getApiKey = () => {
-  const key = import.meta.env.VITE_GEMINI_API_KEY;
+  const key = process.env.GEMINI_API_KEY;
   if (!key) {
     // Note: In this environment, GEMINI_API_KEY is usually injected by the platform.
     // If it's missing, it could be a configuration issue in the platform.
@@ -41,32 +41,29 @@ export const generateLetterContent = async (prompt: string): Promise<GeneratedLe
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: `Anda adalah asisten administrasi profesional di Indonesia. 
+      contents: `Anda adalah asisten administrasi profesional tingkat tinggi di Indonesia yang ahli dalam Tata Naskah Dinas dan korespondensi formal. 
       Tugas Anda adalah membuat data surat atau CV berdasarkan permintaan: "${prompt}". 
       
-      Aturan Penulisan:
-      1. TENTUKAN TYPE: 
-         - 'admin': Untuk surat desa, keterangan, dll.
-         - 'job_application': Untuk surat lamaran kerja.
-         - 'cv': Untuk Daftar Riwayat Hidup / CV.
-         - 'sppd': Untuk Surat Perintah Perjalanan Dinas.
-         - 'agreement': Untuk Surat Perjanjian Kerjasama, Penyertaan Modal, Kontrak, dll.
-      2. JUDUL: Harus KAPITAL dan FORMAL.
-      3. NARASI: 
-         - Jika 'admin': Paragraf menerangkan status subjek atau perjanjian. Gunakan "{desa}" sebagai placeholder desa.
-         - Jika 'job_application': Surat lamaran kerja yang sopan, menyebutkan posisi dan perusahaan tujuan.
-         - Jika 'cv': Ringkasan profil profesional atau narasi singkat tentang diri.
-         - Jika 'sppd': Ringkasan tujuan atau maksud perjalanan dinas.
-         - Jika 'agreement': Draft surat perjanjian lengkap dengan pembukaan, identitas pihak (PIHAK PERTAMA, PIHAK KEDUA, dst), dan PASAL-PASAL (Pasal 1, Pasal 2, dst) yang relevan dengan permintaan (misal: Penyertaan Modal, Bagi Hasil, Jangka Waktu).
-      4. EKSTRAKSI DATA: 
-         - Ekstraksi Nama, NIK, Tempat/Tgl Lahir (YYYY-MM-DD).
-         - Jika 'job_application': Ekstraksi posisiDilamar dan perusahaanTujuan.
-         - Jika 'sppd': Ekstraksi tujuanPerjalanan, tanggalBerangkat, tanggalKembali, kendaraan, dan bebanAnggaran.
-         - Jika ada Harga: Ekstraksi ke hargaJualBeli.
-         - Jika ada Detail Lokasi/Batas: Ekstraksi ke detailObjek.
-         - Jika 'cv': Ekstraksi Pendidikan (institusi, gelar, tahun), Pengalaman (perusahaan, posisi, durasi, deskripsi), dan Keahlian (nama, level).
+      Aturan Penulisan Utama:
+      1. TENTUKAN TYPE SECARA TEPAT: 
+         - 'admin': Surat keterangan desa, kelahiran, kematian, domisili, atau usaha.
+         - 'job_application': Surat lamaran kerja profesional.
+         - 'cv': Daftar Riwayat Hidup (Curriculum Vitae).
+         - 'sppd': Surat Perintah Perjalanan Dinas resmi.
+         - 'agreement': Surat Perjanjian, Kontrak, atau MoU.
+      2. PENGGUNAAN BAHASA: Gunakan Bahasa Indonesia Baku (EYD), formal, sopan, dan persuasif sesuai konteks.
+      3. JUDUL: Gunakan huruf KAPITAL, TEBAL, dan deskriptif (misal: SURAT KETERANGAN AHLI WARIS).
+      4. NARASI STRUKTURAL: 
+         - Jika 'admin': Gunakan pembukaan standar "Kepala Desa {desa}... menerangkan bahwa...". Gunakan "{desa}" sebagai placeholder.
+         - Jika 'job_application': Gunakan format lamaran modern: pembukaan (darimana info didapat), posisi yang dilamar, kualifikasi singkat, dan penutup.
+         - Jika 'agreement': Harus memiliki PASAL-PASAL (Pasal 1: Objek, Pasal 2: Harga, Pasal 3: Sanksi, dll). Sebutkan PIHAK PERTAMA dan PIHAK KEDUA secara jelas.
+      5. EKSTRAKSI DATA: 
+         - Ekstrak semua entitas: Nama, NIK, Tempat/Tgl Lahir, Alamat.
+         - Tanggal lahir harus dalam format YYYY-MM-DD.
+         - Jika 'sppd': Ekstrak tujuanPerjalanan, tanggalBerangkat, tanggalKembali, kendaraan, dan bebanAnggaran.
+         - Jika 'cv': Buat detail Pendidikan, Pengalaman, dan Keahlian secara lengkap berdasarkan konteks atau narasi.
       
-      Berikan jawaban dalam format JSON.`,
+      Output harus dalam format JSON murni tanpa markdown prefix.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {

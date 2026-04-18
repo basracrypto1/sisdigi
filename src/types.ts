@@ -67,6 +67,10 @@ export interface LetterData {
   tanggalKembali?: string;
   kendaraan?: string;
   bebanAnggaran?: string;
+  tingkatBiaya?: string;
+  lamanyaPerjalanan?: string;
+  pangkatPenerima?: string;
+  nipPenerima?: string;
 }
 
 export interface SavedLetter extends LetterData {
@@ -111,4 +115,8 @@ export const INITIAL_DATA: LetterData = {
   tanggalKembali: '',
   kendaraan: 'Kendaraan Dinas / Umum',
   bebanAnggaran: 'Dana Desa / APBDes',
+  tingkatBiaya: 'Tingkat C',
+  lamanyaPerjalanan: '... Hari',
+  pangkatPenerima: '-',
+  nipPenerima: '-',
 };

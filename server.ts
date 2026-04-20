@@ -14,8 +14,8 @@ let supabaseClient: any = null;
 
 function getSupabase() {
   if (!supabaseClient) {
-    const url = process.env.SUPABASE_URL;https://ahespvxcmzikldtgcpxi.supabase.co
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoZXNwdnhjbXppa2xkdGdjcHhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2MzEzNjMsImV4cCI6MjA5MjIwNzM2M30.pa1ueS-eQ2vwEwFydX1ssNAmxIL_OwZbKIjHqhffckM
+    const url = process.env.SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !key) {
       throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
     }

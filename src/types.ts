@@ -11,26 +11,30 @@ export interface Witness {
 }
 
 export interface Education {
-  institusi: string;
-  gelar: string;
-  tahun: string;
+  sekolah: string;
+  periode: string;
+  jurusan: string;
+  deskripsi: string;
 }
 
 export interface Experience {
   perusahaan: string;
+  periode: string;
   posisi: string;
-  durasi: string;
   deskripsi: string;
 }
 
-export interface Skill {
-  nama: string;
-  level: string; // e.g., 'Pemula', 'Menengah', 'Ahli'
+export interface LineItem {
+  deskripsi: string;
+  kuantitas: number;
+  satuan: string;
+  hargaSatuan: number;
+  total: number;
 }
 
 export interface LetterData {
   id: string;
-  type: 'admin' | 'job_application' | 'cv' | 'sppd' | 'agreement';
+  type: 'admin' | 'cv' | 'job_app' | 'business' | 'agreement';
   nomorSurat: string;
   kabupaten: string;
   kecamatan: string;
@@ -38,8 +42,6 @@ export interface LetterData {
   alamatDesa: string;
   nama: string;
   nik: string;
-  email?: string;
-  telepon?: string;
   tempatLahir: string;
   tanggalLahir: string;
   jenisKelamin: 'Laki-laki' | 'Perempuan';
@@ -53,27 +55,40 @@ export interface LetterData {
   jabatanKades: string;
   ahliWaris: Heir[];
   saksi: Witness[];
-  pendidikan: Education[];
-  pengalaman: Experience[];
-  keahlian: Skill[];
+  items: LineItem[];
   logoKabupaten: string;
+  paperSize: 'a4' | 'legal' | 'letter';
   detailObjek?: string; // Specific for Land/Property sales
   hargaJualBeli?: string; // Specific for sales
-  perusahaanTujuan?: string; // For Job Application
-  posisiDilamar?: string; // For Job Application
-  // SPPD Fields
-  tujuanPerjalanan?: string;
-  tanggalBerangkat?: string;
-  tanggalKembali?: string;
-  kendaraan?: string;
-  bebanAnggaran?: string;
-  tingkatBiaya?: string;
-  lamanyaPerjalanan?: string;
-  pangkatPenerima?: string;
-  nipPenerima?: string;
+  penerima?: string; // Recipient for invitations (Kepada Yth)
+  lampiran?: string; // Enclosures
+  tembusan?: string; // Carbon copy list at bottom
+  memo?: string; // Auto-generated short summary/memo
+  // CV & Job App specific
+  email?: string;
+  telepon?: string;
+  linkedin?: string;
+  portofolio?: string;
+  pendidikan?: Education[];
+  pengalaman?: Experience[];
+  keahlian?: string[];
+  perusahaanTujuan?: string;
+  posisiTujuan?: string;
 }
 
 export interface SavedLetter extends LetterData {
+  updatedAt: string;
+}
+
+export interface Citizen {
+  id: string;
+  nama: string;
+  nik: string;
+  tempatLahir: string;
+  tanggalLahir: string;
+  jenisKelamin: 'Laki-laki' | 'Perempuan';
+  pekerjaan: string;
+  alamat: string;
   updatedAt: string;
 }
 
@@ -87,8 +102,6 @@ export const INITIAL_DATA: LetterData = {
   alamatDesa: 'Jl. Raya Wibawamukti No. 01, Wiralaksana',
   nama: '',
   nik: '',
-  email: '',
-  telepon: '',
   tempatLahir: '',
   tanggalLahir: '',
   jenisKelamin: 'Laki-laki',
@@ -102,21 +115,22 @@ export const INITIAL_DATA: LetterData = {
   jabatanKades: 'KEPALA DESA WIBAWAMUKTI',
   ahliWaris: [],
   saksi: [],
+  items: [],
+  logoKabupaten: '', // Base64 or URL
+  paperSize: 'legal',
+  detailObjek: '',
+  hargaJualBeli: '',
+  penerima: '',
+  lampiran: '',
+  tembusan: '',
+  memo: '',
+  email: '',
+  telepon: '',
+  linkedin: '',
+  portofolio: '',
   pendidikan: [],
   pengalaman: [],
   keahlian: [],
-  logoKabupaten: '', // Base64 or URL
-  detailObjek: '',
-  hargaJualBeli: '',
   perusahaanTujuan: '',
-  posisiDilamar: '',
-  tujuanPerjalanan: '',
-  tanggalBerangkat: '',
-  tanggalKembali: '',
-  kendaraan: 'Kendaraan Dinas / Umum',
-  bebanAnggaran: 'Dana Desa / APBDes',
-  tingkatBiaya: 'Tingkat C',
-  lamanyaPerjalanan: '... Hari',
-  pangkatPenerima: '-',
-  nipPenerima: '-',
+  posisiTujuan: '',
 };

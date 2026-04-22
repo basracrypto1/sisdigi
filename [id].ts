@@ -21,10 +21,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const supabase = getSupabase();
     const { id } = req.query;
 
-    // DELETE - hapus surat berdasarkan id
+    // DELETE - hapus warga berdasarkan id
     if (req.method === "DELETE") {
       const { error } = await supabase
-        .from("letters")
+        .from("citizens")
         .delete()
         .eq("id", id as string);
 
@@ -35,7 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.status(405).json({ error: "Method not allowed" });
   } catch (error: any) {
-    console.error("Delete Letter Error:", error.message);
+    console.error("Delete Citizen Error:", error.message);
     return res.status(500).json({ error: error.message });
   }
 }

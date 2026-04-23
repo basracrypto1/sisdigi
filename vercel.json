@@ -1,5 +1,12 @@
 {
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" }
+    { "source": "/api/citizens/batch", "destination": "/api/citizens/batch" },
+    { "source": "/api/citizens/:id", "destination": "/api/citizens/[id]" },
+    { "source": "/api/letters/:id", "destination": "/api/letters/[id]" },
+    { "source": "/api/citizens", "destination": "/api/citizens" },
+    { "source": "/api/letters", "destination": "/api/letters" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

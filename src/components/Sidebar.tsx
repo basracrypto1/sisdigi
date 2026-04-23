@@ -7,9 +7,11 @@ import {
   Settings,
   X,
   Heart,
-  MessageSquare
+  MessageSquare,
+  LogOut
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { User } from 'firebase/auth';
 
 export type PageId = 'dashboard' | 'warga' | 'buat-surat' | 'arsip' | 'settings';
 
@@ -18,14 +20,16 @@ interface Props {
   onPageChange: (page: PageId) => void;
   isOpen: boolean;
   onClose: () => void;
+  user?: User | null;
+  onLogout?: () => void;
 }
 
-export const Sidebar: React.FC<Props> = ({ activePage, onPageChange, isOpen, onClose }) => {
+export const Sidebar: React.FC<Props> = ({ activePage, onPageChange, isOpen, onClose, user, onLogout }) => {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, desc: 'Statistik & Ringkasan' },
     { id: 'buat-surat', label: 'Buat Surat', icon: FilePlus, desc: 'Generator Dokumen AI' },
     { id: 'warga', label: 'Data Warga', icon: Users, desc: 'Direktori Penduduk' },
-    { id: 'arsip', label: 'Arsip', icon: Archive, desc: 'Riwayat Surat' },
+    { id: 'arsip', label: 'Diterbitkan', icon: Archive, desc: 'Surat Terbit' },
     { id: 'settings', label: 'Pengaturan', icon: Settings, desc: 'Konfigurasi Sistem' },
   ];
 
@@ -117,10 +121,9 @@ export const Sidebar: React.FC<Props> = ({ activePage, onPageChange, isOpen, onC
 
           <div className="flex flex-col items-center opacity-30 gap-1 text-center">
             <span className="text-[7px] uppercase tracking-[3px] font-bold">Digitalization by</span>
-            <span className="text-[9px] font-bold text-ink transition-colors underline decoration-accent/20">FAHRUL ANAM</span>
-            <p className="text-[6px] tracking-tight font-medium uppercase mt-0.5 max-w-[150px]">
-              T. Merah Laok
-            </p>
+            <span className="text-[9px] font-bold text-ink transition-colors underline decoration-accent/20 uppercase tracking-widest leading-relaxed">
+              FAHRUL ANAM <br/> DESA CAKRAWANA
+            </span>
           </div>
         </div>
       </aside>

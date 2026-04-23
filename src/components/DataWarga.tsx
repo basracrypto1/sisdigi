@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Citizen } from '../types';
 import { 
   Plus, Search, User, Trash2, Edit3, 
-  ChevronRight, Filter, Download, Upload,
-  MoreVertical, FileText, CheckCircle2, X,
-  Camera, Scan, Loader2, Sparkles, Image as ImageIcon
+  ChevronRight, Download, Upload,
+  FileText, X, Camera, Scan, Loader2, RefreshCw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toTitleCase, toSentenceCase } from '../lib/utils';
 import { scanKtp } from '../services/geminiService';
+import { storage } from '../lib/localDb';
+import { googleSheetsService } from '../services/sheetsService';
 import * as XLSX from 'xlsx';
 
 interface Props {
@@ -21,8 +22,7 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCitizen, setEditingCitizen] = useState<Citizen | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMigrating, setIsMigrating] = useState(false);
-  const [hasLocalData, setHasLocalData] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [isExportingExcel, setIsExportingExcel] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -33,6 +33,11 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
   });
   const [isScanning, setIsScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setCitizens(storage.getCitizens());
+    setIsLoading(false);
+  }, []);
 
   const handleScanKtp = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -50,7 +55,6 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
           setFormData({
             ...formData,
             ...result,
-            // Ensure fields are formatted if AI returns raw casing
             nama: toTitleCase(result.nama || ''),
             tempatLahir: toTitleCase(result.tempatLahir || ''),
             pekerjaan: toTitleCase(result.pekerjaan || ''),
@@ -69,46 +73,6 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
     }
   };
 
-  useEffect(() => {
-    fetchCitizens();
-    checkLocalData();
-  }, []);
-
-  const checkLocalData = () => {
-    try {
-      const saved = localStorage.getItem('surt_citizens');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setHasLocalData(true);
-        }
-      }
-    } catch (e) {
-      console.error("Local data check error");
-    }
-  };
-
-  const fetchCitizens = async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/citizens');
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        setCitizens(data.map(c => ({
-          ...c,
-          tempatLahir: c.tempat_lahir,
-          tanggalLahir: c.tanggal_lahir,
-          jenisKelamin: c.jenis_kelamin,
-          updatedAt: c.updated_at
-        })));
-      }
-    } catch (err) {
-      console.error("Fetch citizens error:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleExport = () => {
     if (citizens.length === 0) {
       alert('Tidak ada data untuk diekspor.');
@@ -117,13 +81,10 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
 
     setIsExporting(true);
     try {
-      // Create CSV Header
       const headers = ['ID', 'NIK', 'Nama', 'Tempat Lahir', 'Tanggal Lahir', 'Jenis Kelamin', 'Pekerjaan', 'Alamat', 'Terakhir Diperbarui'];
-      
-      // Map data to CSV rows
       const rows = citizens.map(c => [
         `"${c.id}"`,
-        `'${c.nik}`, // Add single quote to prevent Excel from scientific notation
+        `'${c.nik}`, 
         `"${c.nama}"`,
         `"${c.tempatLahir}"`,
         `"${c.tanggalLahir}"`,
@@ -138,7 +99,6 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
         ...rows.map(row => row.join(','))
       ].join('\n');
 
-      // Create download link
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -166,7 +126,6 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
 
     setIsExportingExcel(true);
     try {
-      // Prepare data for Excel
       const excelData = citizens.map((c, index) => ({
         'No': index + 1,
         'NIK': c.nik,
@@ -179,29 +138,16 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
         'Tanggal Update': new Date(c.updatedAt).toLocaleDateString('id-ID')
       }));
 
-      // Create Worksheet
       const ws = XLSX.utils.json_to_sheet(excelData);
-
-      // Set column widths
       const wscols = [
-        { wch: 5 },  // No
-        { wch: 20 }, // NIK
-        { wch: 25 }, // Nama
-        { wch: 20 }, // Tempat Lahir
-        { wch: 15 }, // Tanggal Lahir
-        { wch: 15 }, // Jenis Kelamin
-        { wch: 20 }, // Pekerjaan
-        { wch: 40 }, // Alamat
-        { wch: 15 }  // Update
+        { wch: 5 }, { wch: 20 }, { wch: 25 }, { wch: 20 }, { wch: 15 },
+        { wch: 15 }, { wch: 20 }, { wch: 40 }, { wch: 15 }
       ];
       ws['!cols'] = wscols;
 
-      // Create Workbook
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Data Warga");
-
-      // Save file
-      const filename = `Data_Warga_Desa_${new Date().toISOString().split('T')[0]}.xlsx`;
+      const filename = `Data_Warga_${new Date().toISOString().split('T')[0]}.xlsx`;
       XLSX.writeFile(wb, filename);
     } catch (err) {
       console.error("Excel Export error:", err);
@@ -230,7 +176,6 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
         return;
       }
 
-      // Basic CSV Parser (handling quoted values)
       const parseCSVLine = (line: string) => {
         const result = [];
         let cur = '';
@@ -250,7 +195,6 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
       };
 
       const headers = parseCSVLine(lines[0]);
-      // Detect column indices based on headers
       const idxNama = headers.findIndex(h => h.toLowerCase().includes('nama'));
       const idxNik = headers.findIndex(h => h.toLowerCase().includes('nik'));
       const idxTempat = headers.findIndex(h => h.toLowerCase().includes('tempat'));
@@ -264,63 +208,36 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
         return;
       }
 
-      const rawData = lines.slice(1).map(line => {
+      lines.slice(1).forEach(line => {
         const parts = parseCSVLine(line);
-        return {
-          id: crypto.randomUUID(),
+        const citizen = {
           nama: toTitleCase(parts[idxNama] || ''),
-          nik: (parts[idxNik] || '').replace(/'/g, '').replace(/\D/g, ''), // Clean NIK from Excel junk
+          nik: (parts[idxNik] || '').replace(/'/g, '').replace(/\D/g, ''),
           tempatLahir: toTitleCase(parts[idxTempat] || ''),
           tanggalLahir: parts[idxTgl] || null,
           jenisKelamin: (parts[idxGender] || 'Laki-laki').includes('P') ? 'Perempuan' : 'Laki-laki',
           pekerjaan: toTitleCase(parts[idxJob] || ''),
           alamat: toSentenceCase(parts[idxAlamat] || ''),
-        };
-      }).filter(c => c.nik && c.nama);
-
-      const res = await fetch('/api/citizens/batch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(rawData)
+        } as Partial<Citizen>;
+        
+        if (citizen.nik && citizen.nama) {
+          storage.saveCitizen(citizen);
+        }
       });
 
-      if (!res.ok) throw new Error("Gagal mengunggah data");
-
-      alert(`Berhasil impor ${rawData.length} data warga.`);
-      await fetchCitizens();
+      const updatedCitizens = storage.getCitizens();
+      setCitizens(updatedCitizens);
+      alert(`Berhasil impor data warga.`);
+      
+      // Silent Auto-sync to Sheets
+      const settings = storage.getSettings();
+      googleSheetsService.syncCitizens(settings?.defaults?.googleAppScriptUrl, updatedCitizens).catch(console.error);
     } catch (err) {
       console.error("Import error:", err);
-      alert('Gagal impor data. Pastikan format file benar.');
+      alert('Gagal impor data.');
     } finally {
       setIsImporting(false);
       e.target.value = '';
-    }
-  };
-
-  const handleMigrate = async () => {
-    const saved = localStorage.getItem('surt_citizens');
-    if (!saved) return;
-    
-    setIsMigrating(true);
-    try {
-      const localCitizens = JSON.parse(saved);
-      const res = await fetch('/api/citizens/batch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(localCitizens)
-      });
-      
-      if (res.ok) {
-        localStorage.removeItem('surt_citizens');
-        setHasLocalData(false);
-        await fetchCitizens();
-        alert('Migrasi data berhasil! Semua data warga sekarang ada di database.');
-      }
-    } catch (err) {
-      console.error("Migration error:", err);
-      alert('Gagal migrasi data.');
-    } finally {
-      setIsMigrating(false);
     }
   };
 
@@ -330,48 +247,33 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
     setScanError(null);
     
     try {
-      const citizenData = {
-        ...formData,
-        id: editingCitizen?.id || crypto.randomUUID(),
-      };
-
-      const res = await fetch('/api/citizens', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(citizenData)
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Gagal menyimpan ke database");
-      }
-
-      await fetchCitizens();
+      const id = editingCitizen?.id || crypto.randomUUID();
+      storage.saveCitizen({ ...formData, id });
+      const updatedCitizens = storage.getCitizens();
+      setCitizens(updatedCitizens);
       setShowAddModal(false);
       setEditingCitizen(null);
       setFormData({ jenisKelamin: 'Laki-laki' });
+
+      // Silent Auto-sync to Sheets
+      const settings = storage.getSettings();
+      googleSheetsService.syncCitizens(settings?.defaults?.googleAppScriptUrl, updatedCitizens).catch(console.error);
     } catch (err: any) {
-      console.error("Submit citizen error:", err);
-      setScanError(err.message || "Gagal menyimpan data. Pastikan tabel 'citizens' sudah dibuat di Supabase.");
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Hapus data warga ini?')) return;
-    
-    setIsLoading(true);
-    try {
-      const res = await fetch(`/api/citizens/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        await fetchCitizens();
-      }
-    } catch (err) {
-      console.error("Delete citizen error:", err);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleDelete = (id: string) => {
+    if (!confirm('Hapus data ini?')) return;
+    storage.deleteCitizen(id);
+    const updatedCitizens = storage.getCitizens();
+    setCitizens(updatedCitizens);
+
+    // Silent Auto-sync to Sheets
+    const settings = storage.getSettings();
+    googleSheetsService.syncCitizens(settings?.defaults?.googleAppScriptUrl, updatedCitizens).catch(console.error);
   };
 
   const filtered = citizens.filter(c => 
@@ -388,9 +290,9 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
             <div className="w-10 h-10 rounded-2xl bg-accent/10 flex items-center justify-center">
               <User className="w-5 h-5 text-accent" />
             </div>
-            <h2 className="text-3xl font-black text-ink tracking-tight uppercase">Data Warga</h2>
+            <h2 className="text-3xl font-black text-ink tracking-tight uppercase">Data Database</h2>
           </div>
-          <p className="text-[10px] font-bold text-ink/30 uppercase tracking-[3px] ml-13">Direktori Kependudukan Desa</p>
+          <p className="text-[10px] font-bold text-ink/30 uppercase tracking-[3px] ml-13">Direktori Penduduk (Lokal)</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -426,17 +328,6 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
             <Download className="w-4 h-4" />
             EKSPOR CSV
           </button>
-          {hasLocalData && (
-            <button 
-              onClick={handleMigrate}
-              disabled={isMigrating}
-              className="flex items-center gap-2 px-4 py-3 bg-paper border border-accent text-accent rounded-2xl font-black text-[9px] uppercase tracking-[2px] transition-all hover:bg-accent hover:text-white disabled:opacity-50"
-              title="Pindahkan data dari browser ke database permanen"
-            >
-              {isMigrating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-              MIGRASI KE DB
-            </button>
-          )}
           <div className="relative group flex-1 md:w-64">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/20 group-focus-within:text-accent transition-colors" />
             <input 
@@ -585,7 +476,6 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
                     </div>
                   )}
 
-                  {/* KTP Scan Integration */}
                   {!editingCitizen && (
                     <div className="p-6 bg-accent/5 border border-accent/20 rounded-3xl space-y-4 mb-2">
                       <div className="flex items-center justify-between">

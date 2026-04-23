@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sparkles, Loader2, ChevronDown, X, FileText, Zap, Search, MessageSquarePlus, HelpCircle, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { generateLetterContent, GeneratedLetter } from '../services/geminiService';
+import { storage } from '../lib/localDb';
 
 interface Props {
   onGenerated: (result: GeneratedLetter) => void;
@@ -73,6 +74,21 @@ export const AIAssistant: React.FC<Props> = ({ onGenerated, currentType }) => {
   const [selectedOption, setSelectedOption] = useState(0);
   const MAX_CHARS = 1000;
 
+  // Load persistence on mount
+  useEffect(() => {
+    const saved = storage.getAIState();
+    if (saved.prompt) setPrompt(saved.prompt);
+    if (saved.suggestion) setSuggestion(saved.suggestion);
+  }, []);
+
+  // Save persistence on changes
+  useEffect(() => {
+    // Only save if there's actually something to save to avoid clearing on initial loads
+    if (prompt || suggestion) {
+      storage.saveAIState({ prompt, suggestion });
+    }
+  }, [prompt, suggestion]);
+
   // Randomize tips based on current type
   const starterTips = React.useMemo(() => {
     let source = ADMIN_TIPS;
@@ -98,12 +114,15 @@ export const AIAssistant: React.FC<Props> = ({ onGenerated, currentType }) => {
     }
   }, [currentType]);
 
-  // Effect to reset state when document type changes
+  // Effect to reset state when document type changes - REMOVED strictly to avoid data loss
+  // We keep it as a comment in case user wants forced clearing later
+  /*
   React.useEffect(() => {
     setSuggestion(null);
     setPrompt('');
     setError(null);
   }, [currentType]);
+  */
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
@@ -164,8 +183,9 @@ export const AIAssistant: React.FC<Props> = ({ onGenerated, currentType }) => {
         narasiSurat: selectedText,
       };
       onGenerated(finalSuggestion);
-      setSuggestion(null);
-      setPrompt('');
+      // We don't clear prompt/suggestion automatically to allow refining
+      // setSuggestion(null);
+      // setPrompt('');
     }
   };
 

@@ -1,8 +1,17 @@
-export function generateLetterNumber(counter: number) {
+export function generateLetterNumber(counter: number, letterCode: string = 'KET') {
   const now = new Date();
   const year = now.getFullYear();
+  const month = now.getMonth() + 1; // 1-12
+  
+  // Konversi bulan ke Romawi
+  const romanMonths = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+  const monthRoman = romanMonths[month - 1];
+  
   const sequence = counter.toString().padStart(3, '0');
-  return `${sequence}/WBW/433.313.02/${year}`;
+  
+  // Format: NOMOR/KODE_SURAT/BULAN/TAHUN
+  // Contoh: 005/SKTM/IV/2024
+  return `${sequence}/${letterCode}/${monthRoman}/${year}`;
 }
 
 export function formatDateIndo(dateString: string) {

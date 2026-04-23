@@ -3,7 +3,7 @@ import { LetterData, INITIAL_DATA } from '../types';
 import { 
   Settings as SettingsIcon, Landmark, Image as ImageIcon, 
   Trash2, Upload, CheckCircle2, RefreshCw, Smartphone, 
-  Globe, Shield, Database, Trash, Info
+  Globe, Shield, Database, Trash, Info, ExternalLink, Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -11,9 +11,10 @@ interface Props {
   // We use current data as a template or reference for global defaults
   currentData: LetterData;
   onUpdateDefaults: (defaults: Partial<LetterData>) => void;
+  onClearDatabase: () => void;
 }
 
-export const Settings: React.FC<Props> = ({ currentData, onUpdateDefaults }) => {
+export const Settings: React.FC<Props> = ({ currentData, onUpdateDefaults, onClearDatabase }) => {
   const [activeTab, setActiveTab] = useState<'umum' | 'lanjutan' | 'sistem'>('umum');
   const [showSuccess, setShowSuccess] = useState(false);
   const [config, setConfig] = useState(currentData);
@@ -37,13 +38,6 @@ export const Settings: React.FC<Props> = ({ currentData, onUpdateDefaults }) => 
         setConfig({ ...config, logoKabupaten: base64 });
       };
       reader.readAsDataURL(file);
-    }
-  };
-
-  const clearDatabase = () => {
-    if (confirm('PERHATIAN: Ini akan menghapus SELURUH riwayat surat dan data warga secara permanen. Lanjutkan?')) {
-      localStorage.clear();
-      window.location.reload();
     }
   };
 
@@ -76,7 +70,7 @@ export const Settings: React.FC<Props> = ({ currentData, onUpdateDefaults }) => 
         {/* Nav Sidebar */}
         <div className="lg:w-64 space-y-2">
           {[
-            { id: 'umum', label: 'Profil Desa', icon: Landmark },
+            { id: 'umum', label: 'Profil Instansi', icon: Landmark },
             { id: 'lanjutan', label: 'Tanda Tangan', icon: Shield },
             { id: 'sistem', label: 'Pemeliharaan', icon: Database },
           ].map((tab) => (
@@ -148,12 +142,30 @@ export const Settings: React.FC<Props> = ({ currentData, onUpdateDefaults }) => 
                     </div>
 
                     <div>
-                      <label className={labelStyle}>Nama Desa</label>
-                      <input type="text" value={config.desa} onChange={e => setConfig({...config, desa: e.target.value})} className={inputStyle} />
+                      <label className={labelStyle}>Nama Instansi / Organisasi / Desa</label>
+                      <input 
+                        list="desaList"
+                        type="text" 
+                        value={config.desa} 
+                        onChange={e => setConfig({...config, desa: e.target.value})} 
+                        className={inputStyle} 
+                        placeholder="Pilih atau ketik nama desa..."
+                      />
+                      <datalist id="desaList">
+                        {[
+                          "Tanah Merah Laok", "Tanah Merah Dajah", "Baipajung", "Basanah", 
+                          "Batangan", "Buddan", "Dlambah Dajah", "Dlambah Laok", "Dumajah", 
+                          "Jangkar", "Kendaban", "Kranggan Barat", "Landak", "Mrecah", 
+                          "Pacentan", "Padurungan", "Pangeleyan", "Patemon", "Petrah", 
+                          "Pettong", "Poter", "Rongdurin", "Tlomar"
+                        ].map(desa => (
+                          <option key={desa} value={desa} />
+                        ))}
+                      </datalist>
                     </div>
 
                     <div>
-                      <label className={labelStyle}>Alamat Lengkap Kantor</label>
+                      <label className={labelStyle}>Alamat Lengkap / Keterangan Lokasi</label>
                       <textarea value={config.alamatDesa} onChange={e => setConfig({...config, alamatDesa: e.target.value})} className={`${inputStyle} h-24 resize-none`} />
                     </div>
                   </div>
@@ -167,19 +179,75 @@ export const Settings: React.FC<Props> = ({ currentData, onUpdateDefaults }) => 
                     <div>
                       <p className="text-[10px] font-black text-accent uppercase tracking-widest leading-tight mb-1">Informasi Pejabat</p>
                       <p className="text-[9px] text-ink/60 font-bold uppercase tracking-wide leading-relaxed">
-                        Data ini digunakan sebagai ttd default (Kepala Desa) pada setiap dokumen Administrasi Desa yang diterbitkan.
+                        Data ini digunakan sebagai tanda tangan default pada setiap dokumen yang diterbitkan.
                       </p>
                     </div>
                   </div>
 
                   <div className="space-y-6">
                     <div>
-                      <label className={labelStyle}>Nama Lengkap (Kala Desa / Pejabat)</label>
+                      <label className={labelStyle}>Nama Lengkap Penandatangan</label>
                       <input type="text" value={config.namaKades} onChange={e => setConfig({...config, namaKades: e.target.value})} className={inputStyle} />
                     </div>
                     <div>
                       <label className={labelStyle}>Jabatan Resmi</label>
                       <input type="text" value={config.jabatanKades} onChange={e => setConfig({...config, jabatanKades: e.target.value})} className={inputStyle} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'cloud' && (
+                <div className="space-y-8">
+                  <div className="p-6 bg-green-50 border border-green-100 rounded-3xl flex items-start gap-4">
+                    <Globe className="w-5 h-5 text-green-600 shrink-0 mt-1" />
+                    <div>
+                      <p className="text-[10px] font-black text-green-700 uppercase tracking-widest leading-tight mb-1">Google Sheets (via App Script)</p>
+                      <p className="text-[9px] text-green-600/70 font-bold uppercase tracking-wide leading-relaxed">
+                        Metode ini tidak memerlukan login Google di aplikasi. Cukup pasang script di Google Sheets Anda dan masukkan URL-nya di sini.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between p-6 bg-bg border border-line rounded-3xl">
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-ink">Aktifkan Sinkronisasi</p>
+                        <p className="text-[8px] font-bold text-ink/30 uppercase mt-0.5">Simpan ke Google Sheets secara otomatis</p>
+                      </div>
+                      <button 
+                        onClick={() => setConfig({ ...config, googleSheetEnabled: !config.googleSheetEnabled })}
+                        className={`w-12 h-6 rounded-full transition-all relative ${config.googleSheetEnabled ? 'bg-accent' : 'bg-line'}`}
+                      >
+                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${config.googleSheetEnabled ? 'left-7' : 'left-1'}`} />
+                      </button>
+                    </div>
+
+                    <div>
+                      <label className={labelStyle}>URL Google App Script Web App</label>
+                      <input 
+                        type="text" 
+                        placeholder="https://script.google.com/macros/s/.../exec"
+                        value={config.googleAppScriptUrl || ''} 
+                        onChange={e => setConfig({...config, googleAppScriptUrl: e.target.value})} 
+                        className={inputStyle} 
+                      />
+                      <p className="mt-4 text-[8px] font-bold text-ink/20 uppercase tracking-[2px] leading-relaxed">
+                        * PASTIKAN SCRIPT SUDAH DI-DEPLOY SEBAGAI "WEB APP" DENGAN AKSES "ANYONE".
+                      </p>
+                    </div>
+
+                    <div className="p-6 bg-bg border border-line rounded-3xl">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-ink mb-4">Cara Mendapatkan URL:</p>
+                      <ol className="list-decimal list-inside space-y-2 text-[9px] font-bold text-ink/40 uppercase tracking-wide">
+                        <li>BUKA GOOGLE SHEETS ANDA</li>
+                        <li>MENU: EXTENSIONS &gt; APPS SCRIPT</li>
+                        <li>PASTE KODE SCRIPT YANG SAYA BERIKAN</li>
+                        <li>KLIK: DEPLOY &gt; NEW DEPLOYMENT</li>
+                        <li>SELECT TYPE: WEB APP</li>
+                        <li>WHO HAS ACCESS: ANYONE</li>
+                        <li>SALIN URL WEB APP DAN PASTE DI ATAS</li>
+                      </ol>
                     </div>
                   </div>
                 </div>
@@ -215,7 +283,7 @@ export const Settings: React.FC<Props> = ({ currentData, onUpdateDefaults }) => 
                             <p className="text-[7px] font-bold text-ink/30 uppercase mt-0.5">Wipe Out Database</p>
                           </div>
                         </div>
-                        <button onClick={clearDatabase} className="w-full py-3 bg-white border border-line rounded-xl text-[9px] font-black uppercase tracking-widest text-ink/40 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all">
+                        <button onClick={onClearDatabase} className="w-full py-3 bg-white border border-line rounded-xl text-[9px] font-black uppercase tracking-widest text-ink/40 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all">
                           WIPE DATA
                         </button>
                       </div>
@@ -234,7 +302,7 @@ export const Settings: React.FC<Props> = ({ currentData, onUpdateDefaults }) => 
                         </div>
                       </div>
                       <p className="text-[9px] leading-relaxed uppercase tracking-widest font-bold">
-                        Sistem Informasi Surat Digital dikembangkan untuk efisiensi birokrasi tingkat desa. Menggunakan kecerdasan buatan untuk membantu narasi surat.
+                        Sistem Informasi Surat Digital dikembangkan untuk efisiensi administrasi dokumen. Menggunakan kecerdasan buatan untuk membantu narasi surat.
                       </p>
                       <div className="flex gap-4">
                         <div className="px-4 py-2 border border-paper/10 rounded-lg text-[8px] font-black tracking-widest">STABLE RELEASE</div>

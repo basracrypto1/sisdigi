@@ -368,7 +368,7 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                       >
                         <div className="flex items-center gap-1.5 mb-1 min-w-0">
                           <Landmark className={`flex-shrink-0 w-3 h-3 ${data.type === 'admin' ? 'text-accent' : 'text-ink/40'}`} />
-                          <span className={`text-[9px] font-black tracking-widest uppercase truncate ${data.type === 'admin' ? 'text-accent' : 'text-ink'}`}>Desa</span>
+                          <span className={`text-[9px] font-black tracking-widest uppercase truncate ${data.type === 'admin' ? 'text-accent' : 'text-ink'}`}>Resmi</span>
                         </div>
                         <p className="text-[8px] text-ink/40 leading-tight break-words">Administrasi.</p>
                       </button>
@@ -434,12 +434,12 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                       name="judulSurat"
                       value={data.judulSurat}
                       onChange={handleChange}
-                      placeholder="Contoh: Surat Pengantar Desa"
+                      placeholder="Contoh: Surat Pengantar"
                       className={inputStyle}
                     />
                   </div>
                   <div>
-                    <label className={labelStyle}>Nomor Surat (Hanya Desa)</label>
+                    <label className={labelStyle}>Nomor Surat</label>
                     <div className="flex gap-2">
                       <input
                         type="text"
@@ -485,12 +485,41 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                         </div>
                       </div>
                       <div>
-                        <label className={labelStyle}>Nama Desa</label>
-                        <input type="text" name="desa" value={data.desa} onChange={handleChange} className={inputStyle} />
+                        <label className={labelStyle}>Nama Instansi / Desa</label>
+                        <input 
+                          list="desaFormList"
+                          type="text" 
+                          name="desa" 
+                          value={data.desa} 
+                          onChange={handleChange} 
+                          className={inputStyle} 
+                          placeholder="Pilih atau ketik nama desa..."
+                        />
+                        <datalist id="desaFormList">
+                          {[
+                            "Tanah Merah Laok", "Tanah Merah Dajah", "Baipajung", "Basanah", 
+                            "Batangan", "Buddan", "Dlambah Dajah", "Dlambah Laok", "Dumajah", 
+                            "Jangkar", "Kendaban", "Kranggan Barat", "Landak", "Mrecah", 
+                            "Pacentan", "Padurungan", "Pangeleyan", "Patemon", "Petrah", 
+                            "Pettong", "Poter", "Rongdurin", "Tlomar"
+                          ].map(desa => (
+                            <option key={desa} value={desa} />
+                          ))}
+                        </datalist>
                       </div>
                       <div>
-                        <label className={labelStyle}>Alamat Kantor</label>
+                        <label className={labelStyle}>Alamat Kantor / Lokasi</label>
                         <input type="text" name="alamatDesa" value={data.alamatDesa} onChange={handleChange} className={inputStyle} />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-line">
+                        <div>
+                          <label className={labelStyle}>Nama Penandatangan</label>
+                          <input type="text" name="namaKades" value={data.namaKades || ''} onChange={handleChange} className={inputStyle} placeholder="Nama Pejabat" />
+                        </div>
+                        <div>
+                          <label className={labelStyle}>Jabatan</label>
+                          <input type="text" name="jabatanKades" value={data.jabatanKades || ''} onChange={handleChange} className={inputStyle} placeholder="Kepala Desa" />
+                        </div>
                       </div>
                     </div>
 

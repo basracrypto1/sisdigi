@@ -1,0 +1,47 @@
+{
+  "entities": {
+    "Citizen": {
+      "title": "Citizen",
+      "description": "Data kependudukan warga desa",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nama": { "type": "string" },
+        "nik": { "type": "string" },
+        "tempatLahir": { "type": "string" },
+        "tanggalLahir": { "type": "string" },
+        "jenisKelamin": { "type": "string", "enum": ["Laki-laki", "Perempuan"] },
+        "pekerjaan": { "type": "string" },
+        "alamat": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "nama", "nik"]
+    },
+    "SavedLetter": {
+      "title": "Saved Letter",
+      "description": "Arsip surat yang telah diterbitkan",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string" },
+        "nomorSurat": { "type": "string" },
+        "judulSurat": { "type": "string" },
+        "nama": { "type": "string" },
+        "nik": { "type": "string" },
+        "tanggalSurat": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "nomorSurat", "judulSurat"]
+    }
+  },
+  "firestore": {
+    "citizens/{citizenId}": {
+      "schema": "Citizen",
+      "description": "Koleksi data warga"
+    },
+    "letters/{letterId}": {
+      "schema": "SavedLetter",
+      "description": "Koleksi arsip surat"
+    }
+  }
+}

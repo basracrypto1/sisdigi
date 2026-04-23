@@ -1,0 +1,88 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 3. Primitive Definition
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isOwner(data) {
+      return isSignedIn() && data.userId == request.auth.uid;
+    }
+
+    // --- CITIZENS ---
+    function isValidCitizen(data) {
+      return data.keys().hasAll(['id', 'nama', 'nik', 'userId', 'updatedAt'])
+        && data.id is string && data.id.size() <= 128
+        && data.nama is string && data.nama.size() <= 200
+        && data.nik is string && data.nik.size() == 16
+        && data.userId == request.auth.uid
+        && data.updatedAt == request.time;
+    }
+
+    match /citizens/{citizenId} {
+      allow get: if isSignedIn() && isOwner(existing());
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      
+      allow create: if isSignedIn() 
+        && isValidId(citizenId) 
+        && isValidCitizen(incoming());
+        
+      allow update: if isSignedIn() 
+        && isOwner(existing())
+        && isValidCitizen(incoming())
+        && incoming().id == existing().id
+        && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['nama', 'nik', 'tempatLahir', 'tanggalLahir', 'jenisKelamin', 'pekerjaan', 'alamat', 'updatedAt'])
+        );
+        
+      allow delete: if isSignedIn() && isOwner(existing());
+    }
+
+    // --- LETTERS ---
+    function isValidLetter(data) {
+      return data.keys().hasAll(['id', 'nomorSurat', 'judulSurat', 'userId', 'updatedAt'])
+        && data.id is string && data.id.size() <= 128
+        && data.nomorSurat is string && data.nomorSurat.size() <= 100
+        && data.userId == request.auth.uid
+        && data.updatedAt == request.time;
+    }
+
+    match /letters/{letterId} {
+      allow get: if isSignedIn() && isOwner(existing());
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      
+      allow create: if isSignedIn() 
+        && isValidId(letterId) 
+        && isValidLetter(incoming());
+        
+      allow update: if isSignedIn() 
+        && isOwner(existing())
+        && isValidLetter(incoming())
+        && incoming().id == existing().id
+        && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['nomorSurat', 'judulSurat', 'nama', 'nik', 'updatedAt', 'data']) 
+        );
+        
+      allow delete: if isSignedIn() && isOwner(existing());
+    }
+  }
+}

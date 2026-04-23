@@ -178,9 +178,9 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
 
           {/* Header Text Content */}
           <div className="text-center w-full px-24">
-            <h3 className="text-[14pt] leading-tight font-bold uppercase tracking-wide">Pemerintah Kabupaten <EditableSpan field="kabupaten" value={data.kabupaten} /></h3>
-            <h3 className="text-[15pt] leading-tight font-bold uppercase tracking-wide">Kecamatan <EditableSpan field="kecamatan" value={data.kecamatan} /></h3>
-            <h2 className="text-[18pt] leading-tight font-black uppercase mt-0.5 tracking-wider font-heading">Desa <EditableSpan field="desa" value={data.desa} /></h2>
+            <h3 className="text-[14pt] leading-tight font-bold uppercase tracking-wide">Pemerintah Kabupaten <EditableSpan field="kabupaten" value={data.kabupaten} uppercase /></h3>
+            <h3 className="text-[15pt] leading-tight font-bold uppercase tracking-wide">KECAMATAN <EditableSpan field="kecamatan" value={data.kecamatan} uppercase /></h3>
+            <h2 className="text-[18pt] leading-tight font-black uppercase mt-0.5 tracking-wider font-heading"><EditableSpan field="desa" value={data.desa} uppercase /></h2>
             <p className="text-[9pt] mt-1 font-sans italic tracking-tight border-t border-ink/20 pt-1 leading-relaxed"><EditableSpan field="alamatDesa" value={data.alamatDesa} /></p>
           </div>
         </div>
@@ -244,7 +244,7 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
                 </div>
              </div>
              <div className="text-right">
-                <EditableSpan field="desa" value={data.desa} />, {formatDateIndo(data.tanggalSurat)}
+                <span><EditableSpan field="desa" value={data.desa} /></span>, {formatDateIndo(data.tanggalSurat)}
              </div>
           </div>
 
@@ -266,9 +266,9 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
         {!(data.penerima || (data.judulSurat && data.judulSurat.toUpperCase().includes('UNDANGAN'))) && (
           <p className="text-justify indent-[1.25cm]">
             {(!data.nama && !data.nik) ? (
-              <>Bahwa sehubungan dengan pelaksanaan tugas dan tanggung jawab di lingkungan Pemerintahan Desa <EditableSpan field="desa" value={data.desa} />, maka dengan ini kami informasikan hal-hal sebagai berikut:</>
+              <>Bahwa sehubungan dengan pelaksanaan tugas dan tanggung jawab di lingkungan <EditableSpan field="desa" value={data.desa} />, maka dengan ini kami informasikan hal-hal sebagai berikut:</>
             ) : (
-              <>Kepala Desa <EditableSpan field="desa" value={data.desa} />, Kecamatan <EditableSpan field="kecamatan" value={data.kecamatan} />, Kabupaten <EditableSpan field="kabupaten" value={data.kabupaten} />, menerangkan dengan sebenarnya bahwa:</>
+              <><EditableSpan field="jabatanKades" value={data.jabatanKades} /> <EditableSpan field="desa" value={data.desa} />, Kecamatan <EditableSpan field="kecamatan" value={data.kecamatan} />, Kabupaten <EditableSpan field="kabupaten" value={data.kabupaten} />, menerangkan dengan sebenarnya bahwa:</>
             )}
           </p>
         )}
@@ -418,9 +418,11 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
 
       <div className="mt-16 flex justify-end">
         <div className="text-center min-w-[250px] inline-block break-inside-avoid-page" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-          <p><EditableSpan field="desa" value={data.desa} />, {formatDateIndo(data.tanggalSurat)}</p>
-          <p className="font-bold underline uppercase mb-20"><EditableSpan field="jabatanKades" value={data.jabatanKades} /></p>
-          <p className="font-bold underline uppercase italic"><EditableSpan field="namaKades" value={data.namaKades} /></p>
+          <p className="uppercase">
+            <span><EditableSpan field="desa" value={data.desa} uppercase /></span>, {formatDateIndo(data.tanggalSurat)}
+          </p>
+          <p className="font-bold underline uppercase mb-20"><EditableSpan field="jabatanKades" value={data.jabatanKades} uppercase /></p>
+          <p className="font-bold underline uppercase italic"><EditableSpan field="namaKades" value={data.namaKades} uppercase /></p>
         </div>
       </div>
 
@@ -467,7 +469,9 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
           </div>
           <div className="text-right">
             <h4 className="text-[10px] font-black uppercase tracking-widest text-ink/40 mb-3">Tanggal</h4>
-            <p className="font-bold">{formatDateIndo(data.tanggalSurat)}</p>
+            <p className="font-bold">
+              <span><EditableSpan field="desa" value={data.desa} /></span>, {formatDateIndo(data.tanggalSurat)}
+            </p>
           </div>
         </div>
 

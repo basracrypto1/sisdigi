@@ -74,6 +74,9 @@ export interface LetterData {
   keahlian?: string[];
   perusahaanTujuan?: string;
   posisiTujuan?: string;
+  spreadsheetId?: string;
+  googleSheetEnabled?: boolean;
+  googleAppScriptUrl?: string;
 }
 
 export interface SavedLetter extends LetterData {
@@ -96,10 +99,10 @@ export const INITIAL_DATA: LetterData = {
   id: crypto.randomUUID(),
   type: 'admin',
   nomorSurat: '',
-  kabupaten: 'Cakrawana',
-  kecamatan: 'Wiralaksana',
-  desa: 'Wibawamukti',
-  alamatDesa: 'Jl. Raya Wibawamukti No. 01, Wiralaksana',
+  kabupaten: 'Bangkalan',
+  kecamatan: 'Tanah Merah',
+  desa: 'Cakrawana',
+  alamatDesa: 'Jl. Raya Desa Cakrawana, Tanah Merah',
   nama: '',
   nik: '',
   tempatLahir: '',
@@ -112,7 +115,7 @@ export const INITIAL_DATA: LetterData = {
   narasiSurat: 'Bahwa nama tersebut di atas adalah benar-benar penduduk Desa {desa} yang menurut pengamatan kami termasuk dalam golongan keluarga ekonomi tidak mampu (Keluarga Pra Sejahtera).',
   tanggalSurat: new Date().toISOString().split('T')[0],
   namaKades: 'NAFIS BASKARA',
-  jabatanKades: 'KEPALA DESA WIBAWAMUKTI',
+  jabatanKades: 'KEPALA DESA',
   ahliWaris: [],
   saksi: [],
   items: [],
@@ -133,4 +136,6 @@ export const INITIAL_DATA: LetterData = {
   keahlian: [],
   perusahaanTujuan: '',
   posisiTujuan: '',
+  spreadsheetId: '',
+  googleSheetEnabled: false,
 };

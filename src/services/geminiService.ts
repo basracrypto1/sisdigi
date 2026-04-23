@@ -5,7 +5,15 @@ let aiClient: GoogleGenAI | null = null;
 
 const getAI = () => {
   if (!aiClient) {
-    const key = import.meta.env.VITE_GEMINI_API_KEY;
+    // Membaca kunci dari berbagai kemungkinan sumber (Vite, Process, atau Default)
+    const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || 
+                   (import.meta as any).env?.GEMINI_API_KEY || 
+                   (typeof process !== 'undefined' ? process.env?.GEMINI_API_KEY : "") || 
+                   "";
+    
+    if (!apiKey) {
+      console.warn("Peringatan: GEMINI_API_KEY tidak ditemukan. Pastikan Anda sudah mengaturnya di Environment Variables.");
+    }
     aiClient = new GoogleGenAI({ apiKey });
   }
   return aiClient;

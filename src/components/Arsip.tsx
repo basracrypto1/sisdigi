@@ -41,7 +41,7 @@ export const Arsip: React.FC<Props> = ({ history, onSelect, onDelete }) => {
             <div className="w-10 h-10 rounded-2xl bg-accent/10 flex items-center justify-center text-accent">
               <Archive className="w-5 h-5" />
             </div>
-            <h2 className="text-3xl font-black text-ink tracking-tight uppercase">Arsip Surat</h2>
+            <h2 className="text-3xl font-black text-ink tracking-tight uppercase">Surat Diterbitkan</h2>
           </div>
           <p className="text-[10px] font-bold text-ink/30 uppercase tracking-[3px] ml-13">Penyimpanan Digital Dokumen</p>
         </div>
@@ -188,7 +188,7 @@ export const Arsip: React.FC<Props> = ({ history, onSelect, onDelete }) => {
             <div className="w-20 h-20 bg-bg rounded-3xl flex items-center justify-center mb-6">
               <Archive className="w-10 h-10 text-ink/10" />
             </div>
-            <h3 className="text-lg font-black text-ink uppercase tracking-tight mb-2">Arsip Masih Kosong</h3>
+            <h3 className="text-lg font-black text-ink uppercase tracking-tight mb-2">Belum Ada Surat Terbit</h3>
             <p className="text-[10px] font-bold text-ink/30 uppercase tracking-[3px] text-center max-w-xs">Setiap surat yang Anda terbitkan akan muncul di sini secara otomatis.</p>
           </div>
         )}

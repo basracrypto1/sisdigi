@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { LetterData } from '../types';
-import { formatDateIndo, formatRupiah } from '../lib/utils';
+import { formatDateIndo, formatRupiah, toTitleCase } from '../lib/utils';
 import { Edit3, Mail, Phone, MapPin, GraduationCap, Briefcase, Award, User, Users, Share2, Copy, Check, X, Sparkles } from 'lucide-react';
 import { getShareUrl } from '../lib/share';
 import { motion, AnimatePresence } from 'motion/react';
@@ -46,8 +46,11 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
     return String(val);
   };
 
-  const EditableSpan = ({ field, value, bold, italic, uppercase, className }: { field: keyof LetterData, value: any, bold?: boolean, italic?: boolean, uppercase?: boolean, className?: string }) => {
-    const displayValue = sanitizeValue(value);
+  const EditableSpan = ({ field, value, bold, italic, uppercase, titleCase, className }: { field: keyof LetterData, value: any, bold?: boolean, italic?: boolean, uppercase?: boolean, titleCase?: boolean, className?: string }) => {
+    let displayValue = sanitizeValue(value);
+    if (titleCase && displayValue) {
+      displayValue = toTitleCase(displayValue);
+    }
     
     // Prevent Enter key in single-line spans
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -244,7 +247,7 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
                 </div>
              </div>
              <div className="text-right">
-                <span><EditableSpan field="desa" value={data.desa} /></span>, {formatDateIndo(data.tanggalSurat)}
+                <span><EditableSpan field="desa" value={data.desa} titleCase /></span>, {formatDateIndo(data.tanggalSurat)}
              </div>
           </div>
 
@@ -261,12 +264,16 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
         </div>
       )}
 
-      <div className="group/header relative leading-relaxed mb-6">
+      <div className="group/header relative leading-normal mb-0">
         {/* Hide default opening if it's a formal invitation that already handled it */}
         {!(data.penerima || (data.judulSurat && data.judulSurat.toUpperCase().includes('UNDANGAN'))) && (
-          <p className="text-justify indent-[1.25cm]">
+          <p className="indent-12 text-justify mb-0">
             {(!data.nama && !data.nik) ? (
-              <>Bahwa sehubungan dengan pelaksanaan tugas dan tanggung jawab di lingkungan <EditableSpan field="desa" value={data.desa} />, maka dengan ini kami informasikan hal-hal sebagai berikut:</>
+              data.ahliWaris && data.ahliWaris.length >= 2 ? (
+                <><EditableSpan field="jabatanKades" value={data.jabatanKades} /> <EditableSpan field="desa" value={data.desa} />, Kecamatan <EditableSpan field="kecamatan" value={data.kecamatan} />, Kabupaten <EditableSpan field="kabupaten" value={data.kabupaten} />, menerangkan bahwa pada hari ini telah diadakan kesepakatan antara pihak-pihak di bawah ini:</>
+              ) : (
+                <>Bahwa sehubungan dengan pelaksanaan tugas dan tanggung jawab di lingkungan <EditableSpan field="desa" value={data.desa} />, maka dengan ini kami informasikan hal-hal sebagai berikut:</>
+              )
             ) : (
               <><EditableSpan field="jabatanKades" value={data.jabatanKades} /> <EditableSpan field="desa" value={data.desa} />, Kecamatan <EditableSpan field="kecamatan" value={data.kecamatan} />, Kabupaten <EditableSpan field="kabupaten" value={data.kabupaten} />, menerangkan dengan sebenarnya bahwa:</>
             )}
@@ -275,15 +282,15 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
         
         {/* Only show personal info section if name or NIK exists */}
         {(data.nama || data.nik) && (
-          <div className="pl-10 mt-4">
+          <div className="pl-10 mt-2">
             <table className="layout-table">
               <tbody>
-                <tr><td className="w-[200px] py-1">Nama Lengkap</td><td className="w-[10px]">:</td><td className="uppercase font-bold tracking-wide"><EditableSpan field="nama" value={data.nama} /></td></tr>
-                <tr><td className="py-1">NIK</td><td>:</td><td className="font-mono text-[11pt]"><EditableSpan field="nik" value={data.nik} /></td></tr>
-                <tr><td className="py-1">Tempat, Tgl Lahir</td><td>:</td><td><EditableSpan field="tempatLahir" value={data.tempatLahir} />, {formatDateIndo(data.tanggalLahir)}</td></tr>
-                <tr><td className="py-1">Jenis Kelamin</td><td>:</td><td>{data.jenisKelamin}</td></tr>
-                <tr><td className="py-1">Pekerjaan</td><td>:</td><td><EditableSpan field="pekerjaan" value={data.pekerjaan} /></td></tr>
-                <tr><td className="py-1 align-top">Alamat</td><td className="align-top">:</td><td><EditableSpan field="alamat" value={data.alamat} /></td></tr>
+                <tr><td className="w-[180px] py-0.5">Nama Lengkap</td><td className="w-[10px]">:</td><td className="uppercase font-bold tracking-wide"><EditableSpan field="nama" value={data.nama} /></td></tr>
+                <tr><td className="py-0.5">NIK</td><td>:</td><td className="font-mono text-[11pt]"><EditableSpan field="nik" value={data.nik} /></td></tr>
+                <tr><td className="py-0.5">Tempat, Tgl Lahir</td><td>:</td><td><EditableSpan field="tempatLahir" value={data.tempatLahir} />, {formatDateIndo(data.tanggalLahir)}</td></tr>
+                <tr><td className="py-0.5">Jenis Kelamin</td><td>:</td><td>{data.jenisKelamin}</td></tr>
+                <tr><td className="py-0.5">Pekerjaan</td><td>:</td><td><EditableSpan field="pekerjaan" value={data.pekerjaan} /></td></tr>
+                <tr><td className="py-0.5 align-top">Alamat</td><td className="align-top">:</td><td><EditableSpan field="alamat" value={data.alamat} /></td></tr>
               </tbody>
             </table>
           </div>
@@ -300,7 +307,7 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
       </div>
 
       <div className="group/header relative mt-6">
-        <EditableDiv field="narasiSurat" value={data.narasiSurat} className="indent-[1.25cm] text-justify leading-relaxed mb-4" />
+        <EditableDiv field="narasiSurat" value={data.narasiSurat} className="indent-12 text-justify leading-relaxed mb-4" />
         {onSwitchToEdit && (
           <button 
             onClick={() => onSwitchToEdit('isi')}
@@ -313,7 +320,7 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
 
 
       {/* Detail Jual Beli / Objek if relevant */}
-      {(data.detailObjek || data.hargaJualBeli) && (
+      {(data.detailObjek || data.hargaJualBeli || data.luasTanah || data.batasUtara) && (
         <div className="pl-10 space-y-2 mb-4 group/header relative">
           {data.detailObjek && (
             <div className="flex gap-4">
@@ -327,6 +334,35 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
               <span>: Rp <EditableSpan field="hargaJualBeli" value={data.hargaJualBeli} /></span>
             </div>
           )}
+          {data.luasTanah && (
+            <div className="flex gap-4">
+              <span className="w-44 font-medium opacity-70">Luas Tanah</span>
+              <span>: <EditableSpan field="luasTanah" value={data.luasTanah} /></span>
+            </div>
+          )}
+          {(data.batasUtara || data.batasSelatan || data.batasTimur || data.batasBarat) && (
+            <div className="pt-2 space-y-1">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-ink/40 mb-2">Batas-Batas Tanah:</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1 pl-4">
+                <div className="flex gap-2">
+                  <span className="w-24 opacity-60">- Utara</span>
+                  <span>: <EditableSpan field="batasUtara" value={data.batasUtara} /></span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="w-24 opacity-60">- Selatan</span>
+                  <span>: <EditableSpan field="batasSelatan" value={data.batasSelatan} /></span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="w-24 opacity-60">- Timur</span>
+                  <span>: <EditableSpan field="batasTimur" value={data.batasTimur} /></span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="w-24 opacity-60">- Barat</span>
+                  <span>: <EditableSpan field="batasBarat" value={data.batasBarat} /></span>
+                </div>
+              </div>
+            </div>
+          )}
           {onSwitchToEdit && (
             <button 
               onClick={() => onSwitchToEdit('jual_beli')}
@@ -338,31 +374,32 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
         </div>
       )}
 
-      {/* Pihak Terkait / Ahli Waris */}
+      {/* Daftar Pihak (Penjual / Pembeli / Ahli Waris) */}
       {data.ahliWaris.length > 0 && (
         <div className="mb-6 group/header relative">
-          <p className="mb-2">Berikut adalah pihak-pihak terkait:</p>
-          <div className="pl-4">
-            <table className="text-sm">
-              <thead>
-                <tr>
-                  <th className="w-10">No</th>
-                  <th>Nama</th>
-                  <th>NIK</th>
-                  <th className="text-center">Hubungan / Peran</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.ahliWaris.map((h, i) => (
-                   <tr key={i}>
-                    <td className="text-center italic">{i + 1}</td>
-                    <td className="uppercase"><EditableArraySpan index={i} field="ahliWaris" subField="nama" value={h.nama} /></td>
-                    <td className="font-mono text-xs"><EditableArraySpan index={i} field="ahliWaris" subField="nik" value={h.nik} /></td>
-                    <td className="text-center"><EditableArraySpan index={i} field="ahliWaris" subField="hubungan" value={h.hubungan || h.peran} /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="space-y-8">
+            {data.ahliWaris.map((h, i) => (
+               <div key={i} className={`${i > 0 ? 'mt-8' : ''}`}>
+                 <p className="font-bold underline uppercase mb-3 text-[11pt]">
+                   {h.peran ? h.peran : `PIHAK KE-${i + 1}`} :
+                 </p>
+                 <div className="pl-10">
+                   <table className="layout-table">
+                     <tbody>
+                       <tr><td className="w-[180px] py-0.5">Nama Lengkap</td><td className="w-[10px]">:</td><td className="uppercase font-bold tracking-wide"><EditableArraySpan index={i} field="ahliWaris" subField="nama" value={h.nama} /></td></tr>
+                       <tr><td className="py-0.5">NIK</td><td>:</td><td className="font-mono text-[11pt]"><EditableArraySpan index={i} field="ahliWaris" subField="nik" value={h.nik} /></td></tr>
+                       <tr><td className="py-0.5">Tempat, Tgl Lahir</td><td>:</td><td><EditableArraySpan index={i} field="ahliWaris" subField="tempatLahir" value={h.tempatLahir} />, {formatDateIndo(h.tanggalLahir || '')}</td></tr>
+                       <tr><td className="py-0.5">Jenis Kelamin</td><td>:</td><td><EditableArraySpan index={i} field="ahliWaris" subField="jenisKelamin" value={h.jenisKelamin} /></td></tr>
+                       <tr><td className="py-0.5">Pekerjaan</td><td>:</td><td><EditableArraySpan index={i} field="ahliWaris" subField="pekerjaan" value={h.pekerjaan} /></td></tr>
+                       <tr><td className="py-0.5 align-top">Alamat</td><td className="align-top">:</td><td><EditableArraySpan index={i} field="ahliWaris" subField="alamat" value={h.alamat} /></td></tr>
+                       {h.hubungan && (
+                         <tr><td className="py-0.5 italic text-ink/60 text-[10pt]">Keterangan</td><td>:</td><td className="italic text-ink/60 text-[10pt] tracking-tight truncate border-l border-ink/10 pl-2"><EditableArraySpan index={i} field="ahliWaris" subField="hubungan" value={h.hubungan} /></td></tr>
+                       )}
+                     </tbody>
+                   </table>
+                 </div>
+               </div>
+            ))}
           </div>
           {onSwitchToEdit && (
             <button 
@@ -398,30 +435,46 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
       <p className="indent-[1.25cm]">Surat ini untuk keperluan: <EditableSpan field="keperluan" value={data.keperluan} italic />.</p>
       <p className="indent-[1.25cm]">Demikian surat ini dibuat agar dapat dipergunakan sebagaimana mestinya.</p>
 
+      {/* Multiple Signatures for Parties (Penjual, Pembeli, etc) */}
+      {data.ahliWaris.length >= 2 && (
+        <div className="grid grid-cols-2 gap-10 mt-12 break-inside-avoid-page">
+          {data.ahliWaris.slice(0, 2).map((h, i) => (
+            <div key={i} className="text-center space-y-20">
+              <p className="font-bold uppercase tracking-widest text-[10pt]">{h.peran || `PIHAK KE-${i + 1}`}</p>
+              <div className="space-y-1">
+                <p className="font-bold underline uppercase underline-offset-4 tracking-wide decoration-2">
+                  <EditableArraySpan index={i} field="ahliWaris" subField="nama" value={h.nama} />
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Signatures for Witnesses if any */}
       {data.saksi.length > 0 && (
-        <div className="grid grid-cols-2 gap-10 mt-10">
-          <div className="space-y-12">
+        <div className={`grid grid-cols-2 gap-10 ${data.ahliWaris.length >= 2 ? 'mt-8' : 'mt-12'} break-inside-avoid-page`}>
+          <div className="space-y-20">
             <p className="text-center font-bold">Saksi I</p>
-            <p className="text-center border-b border-ink/40 w-48 mx-auto pb-1 uppercase font-bold text-xs">
+            <p className="text-center border-b border-ink/40 w-48 mx-auto pb-1 uppercase font-bold text-xs decoration-1">
               <EditableArraySpan index={0} field="saksi" subField="nama" value={data.saksi[0]?.nama} />
             </p>
           </div>
-          <div className="space-y-12">
+          <div className="space-y-20">
             <p className="text-center font-bold">Saksi II</p>
-            <p className="text-center border-b border-ink/40 w-48 mx-auto pb-1 uppercase font-bold text-xs">
+            <p className="text-center border-b border-ink/40 w-48 mx-auto pb-1 uppercase font-bold text-xs decoration-1">
               <EditableArraySpan index={1} field="saksi" subField="nama" value={data.saksi[1]?.nama || '...................'} />
             </p>
           </div>
         </div>
       )}
 
-      <div className="mt-16 flex justify-end">
+      <div className="mt-12 flex justify-end">
         <div className="text-center min-w-[250px] inline-block break-inside-avoid-page" style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }}>
-          <p className="uppercase">
-            <span><EditableSpan field="desa" value={data.desa} uppercase /></span>, {formatDateIndo(data.tanggalSurat)}
+          <p className="font-medium text-ink/80">
+            <span><EditableSpan field="desa" value={data.desa} titleCase /></span>, {formatDateIndo(data.tanggalSurat)}
           </p>
-          <p className="font-bold underline uppercase mb-20"><EditableSpan field="jabatanKades" value={data.jabatanKades} uppercase /></p>
+          <p className="font-bold underline uppercase mb-20"><EditableSpan field="jabatanKades" value={data.jabatanKades} /></p>
           <p className="font-bold underline uppercase italic"><EditableSpan field="namaKades" value={data.namaKades} uppercase /></p>
         </div>
       </div>
@@ -470,7 +523,7 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
           <div className="text-right">
             <h4 className="text-[10px] font-black uppercase tracking-widest text-ink/40 mb-3">Tanggal</h4>
             <p className="font-bold">
-              <span><EditableSpan field="desa" value={data.desa} /></span>, {formatDateIndo(data.tanggalSurat)}
+              <span><EditableSpan field="desa" value={data.desa} titleCase /></span>, {formatDateIndo(data.tanggalSurat)}
             </p>
           </div>
         </div>
@@ -518,7 +571,7 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
             <p className="text-sm font-bold uppercase tracking-widest text-ink/40">Hormat Kami,</p>
             <div className="space-y-1">
               <p className="font-black text-lg uppercase border-b-2 border-ink inline-block px-4 pb-1"><EditableSpan field="namaKades" value={data.namaKades} /></p>
-              <p className="text-xs font-bold text-ink/40 uppercase tracking-widest"><EditableSpan field="jabatanKades" value={data.jabatanKades} /></p>
+              <p className="text-xs font-bold text-ink/40 tracking-widest"><EditableSpan field="jabatanKades" value={data.jabatanKades} /></p>
             </div>
           </div>
         </div>
@@ -536,7 +589,7 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
       </div>
 
       <p className="indent-12">
-        Pada hari ini, <span className="font-bold italic uppercase">{formatDateIndo(data.tanggalSurat)}</span>, bertempat di <span className="font-bold underline underline-offset-4"><EditableSpan field="alamatDesa" value={data.alamatDesa} /></span>, kami yang bertanda tangan di bawah ini:
+        Pada hari ini, <span className="font-bold italic">{formatDateIndo(data.tanggalSurat)}</span>, bertempat di <span className="font-bold underline underline-offset-4"><EditableSpan field="alamatDesa" value={data.alamatDesa} /></span>, kami yang bertanda tangan di bawah ini:
       </p>
 
       <div className="space-y-8 pl-8">
@@ -601,7 +654,7 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
              <p className="font-black uppercase tracking-widest text-[10px]">Mengetahui,</p>
              <div className="space-y-1">
                 <p className="font-black underline uppercase underline-offset-4 tracking-widest decoration-2">{data.namaKades}</p>
-                <p className="text-[8px] font-black uppercase tracking-[2px] opacity-40">{data.jabatanKades}</p>
+                <p className="text-[8px] font-black tracking-[2px] opacity-40">{data.jabatanKades}</p>
              </div>
           </div>
         </div>
@@ -770,7 +823,7 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
 
       {/* Date & Recipient */}
       <div className="space-y-6">
-        <p className="text-right">{data.desa || 'Jakarta'}, {formatDateIndo(data.tanggalSurat)}</p>
+        <p className="text-right">{toTitleCase(data.desa || 'Jakarta')}, {formatDateIndo(data.tanggalSurat)}</p>
         
         <div className="space-y-1 group/header relative">
           <p className="font-bold">Kepada Yth:</p>
@@ -867,10 +920,11 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
       <div 
         key={`${data.type}-${data.judulSurat}-${data.nama}-${data.paperSize}`}
         id="printable-letter"
-      className="bg-paper p-[25mm] shadow-2xl rounded-sm border border-line mx-auto relative group printable-content font-serif text-ink text-[12pt]"
+      className="bg-paper shadow-2xl rounded-sm border border-line mx-auto relative group printable-content font-serif text-ink text-[12pt]"
       style={{
         width: currentDim.w,
         minHeight: currentDim.h,
+        padding: '0.9cm 2cm 2cm 2.54cm',
         backgroundImage: `linear-gradient(to bottom, transparent calc(${currentDim.h} - 0.2mm), rgba(0,0,0,0.05) calc(${currentDim.h} - 0.2mm), rgba(0,0,0,0.05) ${currentDim.h}, transparent ${currentDim.h})`,
         backgroundSize: `100% ${currentDim.h}`
       }}
@@ -881,7 +935,7 @@ export const LetterPreview: React.FC<Props> = ({ data, onUpdate, onSwitchToEdit 
           #printable-letter {
             width: ${currentDim.w} !important;
             min-height: ${currentDim.h} !important;
-            padding: 25mm !important;
+            padding: 0.9cm 2cm 2cm 2.54cm !important;
             margin: 0 !important;
           }
         }

@@ -3,6 +3,11 @@ export interface Heir {
   nik: string;
   hubungan: string;
   peran?: string; // e.g., 'Penjual', 'Pembeli', 'Penerima'
+  tempatLahir?: string;
+  tanggalLahir?: string;
+  jenisKelamin?: 'Laki-laki' | 'Perempuan';
+  pekerjaan?: string;
+  alamat?: string;
 }
 
 export interface Witness {
@@ -34,7 +39,7 @@ export interface LineItem {
 
 export interface LetterData {
   id: string;
-  type: 'admin' | 'cv' | 'job_app' | 'business' | 'agreement';
+  type: 'admin' | 'cv' | 'job_app' | 'business';
   nomorSurat: string;
   kabupaten: string;
   kecamatan: string;
@@ -59,6 +64,11 @@ export interface LetterData {
   logoKabupaten: string;
   paperSize: 'a4' | 'legal' | 'letter';
   detailObjek?: string; // Specific for Land/Property sales
+  luasTanah?: string; // New
+  batasUtara?: string; // New
+  batasSelatan?: string; // New
+  batasTimur?: string; // New
+  batasBarat?: string; // New
   hargaJualBeli?: string; // Specific for sales
   penerima?: string; // Recipient for invitations (Kepada Yth)
   lampiran?: string; // Enclosures
@@ -101,8 +111,8 @@ export const INITIAL_DATA: LetterData = {
   nomorSurat: '',
   kabupaten: 'Bangkalan',
   kecamatan: 'Tanah Merah',
-  desa: 'Cakrawana',
-  alamatDesa: 'Jl. Raya Desa Cakrawana, Tanah Merah',
+  desa: 'Tanah Merah Laok',
+  alamatDesa: 'Jl. Raya Desa Tanah Merah Laok, Tanah Merah',
   nama: '',
   nik: '',
   tempatLahir: '',
@@ -114,14 +124,19 @@ export const INITIAL_DATA: LetterData = {
   judulSurat: 'Surat Keterangan Tidak Mampu',
   narasiSurat: 'Bahwa nama tersebut di atas adalah benar-benar penduduk Desa {desa} yang menurut pengamatan kami termasuk dalam golongan keluarga ekonomi tidak mampu (Keluarga Pra Sejahtera).',
   tanggalSurat: new Date().toISOString().split('T')[0],
-  namaKades: 'NAFIS BASKARA',
-  jabatanKades: 'KEPALA DESA',
+  namaKades: 'AZMY HAFIDZ HARIRI, SE',
+  jabatanKades: 'Kepala Desa',
   ahliWaris: [],
   saksi: [],
   items: [],
   logoKabupaten: '', // Base64 or URL
   paperSize: 'legal',
   detailObjek: '',
+  luasTanah: '',
+  batasUtara: '',
+  batasSelatan: '',
+  batasTimur: '',
+  batasBarat: '',
   hargaJualBeli: '',
   penerima: '',
   lampiran: '',

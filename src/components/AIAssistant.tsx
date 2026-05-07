@@ -386,13 +386,22 @@ export const AIAssistant: React.FC<Props> = ({ onGenerated, currentType }) => {
                 </div>
               )}
 
-              <div className="space-y-4">
-                <div className="flex items-baseline justify-between mb-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <p className="text-[10px] uppercase font-black text-ink/30 tracking-[2px]">Judul Hasil Analisis:</p>
+                  <div className="p-5 bg-bg/50 border border-line rounded-2xl">
+                    <p className="text-base font-black text-ink leading-tight tracking-tight">{suggestion.judulSurat}</p>
+                  </div>
                 </div>
-                <div className="p-5 bg-bg/50 border border-line rounded-2xl">
-                  <p className="text-base font-black text-ink leading-tight tracking-tight">{suggestion.judulSurat}</p>
-                </div>
+                {(suggestion.penerima || suggestion.lampiran) && (
+                  <div className="space-y-4">
+                    <p className="text-[10px] uppercase font-black text-ink/30 tracking-[2px]">Administrasi Tambahan:</p>
+                    <div className="p-5 bg-accent/5 border border-accent/10 rounded-2xl space-y-2">
+                      {suggestion.penerima && <p className="text-[10px] font-bold text-accent">Penerima: <span className="text-ink">{suggestion.penerima}</span></p>}
+                      {suggestion.lampiran && <p className="text-[10px] font-bold text-accent">Lampiran: <span className="text-ink">{suggestion.lampiran}</span></p>}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-4">

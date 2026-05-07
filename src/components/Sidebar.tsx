@@ -104,25 +104,10 @@ export const Sidebar: React.FC<Props> = ({ activePage, onPageChange, isOpen, onC
 
         {/* Footer */}
         <div className="p-8 border-t border-line space-y-6">
-          <div className="bg-bg/50 rounded-2xl p-4 border border-line">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-                <Heart className="w-5 h-5 text-accent animate-pulse" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[8px] font-black uppercase tracking-widest text-accent">Status Sistem</span>
-                <span className="text-[10px] font-bold text-ink">Online & Aman</span>
-              </div>
-            </div>
-            <button className="w-full py-2.5 bg-white border border-line rounded-xl text-[9px] font-black uppercase tracking-[2px] text-ink/40 hover:text-accent hover:border-accent transition-all flex items-center justify-center gap-2">
-              <MessageSquare className="w-3 h-3" /> BANTUAN
-            </button>
-          </div>
-
           <div className="flex flex-col items-center opacity-30 gap-1 text-center">
             <span className="text-[7px] uppercase tracking-[3px] font-bold">Digitalization by</span>
             <span className="text-[9px] font-bold text-ink transition-colors underline decoration-accent/20 uppercase tracking-widest leading-relaxed">
-              FAHRUL ANAM <br/> DESA CAKRAWANA
+              ADMINISTRASI DIGITAL <br/> DESA TANAH MERAH LAOK
             </span>
           </div>
         </div>

@@ -41,12 +41,12 @@ export const Arsip: React.FC<Props> = ({ history, onSelect, onDelete }) => {
             <div className="w-10 h-10 rounded-2xl bg-accent/10 flex items-center justify-center text-accent">
               <Archive className="w-5 h-5" />
             </div>
-            <h2 className="text-3xl font-black text-ink tracking-tight uppercase">Surat Diterbitkan</h2>
+            <h2 className="text-2xl sm:text-3xl font-black text-ink tracking-tight uppercase">Surat Diterbitkan</h2>
           </div>
-          <p className="text-[10px] font-bold text-ink/30 uppercase tracking-[3px] ml-13">Penyimpanan Digital Dokumen</p>
+          <p className="text-[9px] sm:text-[10px] font-bold text-ink/30 uppercase tracking-[2px] sm:tracking-[3px] ml-13">Penyimpanan Digital Dokumen</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <div className="relative group flex-1 md:w-80">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/20 group-focus-within:text-accent transition-colors" />
             <input 
@@ -54,11 +54,11 @@ export const Arsip: React.FC<Props> = ({ history, onSelect, onDelete }) => {
               placeholder="CARI SURAT, NAMA, ATAU NOMOR..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white border border-line rounded-2xl text-[10px] uppercase font-bold tracking-widest focus:border-accent outline-none shadow-sm transition-all"
+              className="w-full pl-11 sm:pl-12 pr-4 py-3 bg-white border border-line rounded-2xl text-[9px] sm:text-[10px] uppercase font-bold tracking-widest focus:border-accent outline-none shadow-sm transition-all"
             />
           </div>
           
-          <div className="flex bg-white border border-line rounded-2xl p-1 shadow-sm">
+          <div className="flex bg-white border border-line rounded-2xl p-1 shadow-sm shrink-0 self-end sm:self-auto">
             <button 
               onClick={() => setViewMode('list')}
               className={`p-2 rounded-xl transition-all ${viewMode === 'list' ? 'bg-accent text-white' : 'text-ink/20 hover:text-accent'}`}
@@ -79,55 +79,57 @@ export const Arsip: React.FC<Props> = ({ history, onSelect, onDelete }) => {
       <div className="flex-1 overflow-y-auto no-scrollbar pb-20">
         {filtered.length > 0 ? (
           viewMode === 'list' ? (
-            <div className="bg-white border border-line rounded-[2.5rem] overflow-hidden shadow-sm">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b border-line bg-bg/30">
-                    <th className="px-8 py-5 text-[9px] font-black uppercase tracking-[2px] text-ink/30 w-16">No</th>
-                    <th className="px-8 py-5 text-[9px] font-black uppercase tracking-[2px] text-ink/30">Judul & Nomor</th>
-                    <th className="px-8 py-5 text-[9px] font-black uppercase tracking-[2px] text-ink/30">Warga / Pemohon</th>
-                    <th className="px-8 py-5 text-[9px] font-black uppercase tracking-[2px] text-ink/30">Tanggal Terbit</th>
-                    <th className="px-8 py-5 text-[9px] font-black uppercase tracking-[2px] text-ink/30 text-right">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-line/50">
-                  {filtered.map((letter, idx) => (
-                    <tr key={letter.id} className="hover:bg-bg/50 transition-colors group cursor-pointer" onClick={() => onSelect(letter)}>
-                      <td className="px-8 py-6 text-xs font-bold text-ink/20 font-mono">{(idx + 1).toString().padStart(2, '0')}</td>
-                      <td className="px-8 py-6">
-                        <div className="flex flex-col">
-                          <span className="text-xs font-black text-ink uppercase tracking-tight group-hover:text-accent transition-colors">{letter.judulSurat}</span>
-                          <span className="text-[9px] font-bold text-ink/30 uppercase tracking-[2px] mt-1">{letter.nomorSurat}</span>
-                        </div>
-                      </td>
-                      <td className="px-8 py-6">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-bg border border-line flex items-center justify-center">
-                            <User className="w-4 h-4 text-ink/20" />
-                          </div>
-                          <span className="text-xs font-bold text-ink/70 uppercase">{letter.nama || 'UMUM/LEMABAGA'}</span>
-                        </div>
-                      </td>
-                      <td className="px-8 py-6">
-                        <div className="flex items-center gap-2 text-ink/40">
-                          <Calendar className="w-3.5 h-3.5 text-accent/40" />
-                          <span className="text-[10px] font-bold uppercase tracking-widest">{formatDate(letter.tanggalSurat)}</span>
-                        </div>
-                      </td>
-                      <td className="px-8 py-6 text-right">
-                        <div className="flex items-center justify-end gap-2" onClick={e => e.stopPropagation()}>
-                          <button onClick={() => onSelect(letter)} className="p-2.5 bg-bg border border-line rounded-xl text-ink/40 hover:text-accent hover:border-accent transition-all" title="Buka Detail">
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button onClick={() => onDelete(letter.id)} className="p-2.5 bg-bg border border-line rounded-xl text-ink/40 hover:text-red-500 hover:border-red-500 transition-all" title="Hapus">
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
+            <div className="bg-white border border-line rounded-2xl sm:rounded-[2.5rem] overflow-hidden shadow-sm">
+              <div className="overflow-x-auto no-scrollbar">
+                <table className="w-full text-left border-collapse min-w-[600px] md:min-w-0">
+                  <thead>
+                    <tr className="border-b border-line bg-bg/30">
+                      <th className="px-4 sm:px-8 py-5 text-[8px] sm:text-[9px] font-black uppercase tracking-[2px] text-ink/30 w-12 sm:w-16">No</th>
+                      <th className="px-4 sm:px-8 py-5 text-[8px] sm:text-[9px] font-black uppercase tracking-[2px] text-ink/30">Judul & Nomor</th>
+                      <th className="px-4 sm:px-8 py-5 text-[8px] sm:text-[9px] font-black uppercase tracking-[2px] text-ink/30">Warga / Pemohon</th>
+                      <th className="px-4 sm:px-8 py-5 text-[8px] sm:text-[9px] font-black uppercase tracking-[2px] text-ink/30">Tanggal Terbit</th>
+                      <th className="px-4 sm:px-8 py-5 text-[8px] sm:text-[9px] font-black uppercase tracking-[2px] text-ink/30 text-right">Aksi</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-line/50">
+                    {filtered.map((letter, idx) => (
+                      <tr key={letter.id} className="hover:bg-bg/50 transition-colors group cursor-pointer" onClick={() => onSelect(letter)}>
+                        <td className="px-4 sm:px-8 py-4 sm:py-6 text-xs font-bold text-ink/20 font-mono">{(idx + 1).toString().padStart(2, '0')}</td>
+                        <td className="px-4 sm:px-8 py-4 sm:py-6">
+                          <div className="flex flex-col">
+                            <span className="text-xs font-black text-ink uppercase tracking-tight group-hover:text-accent transition-colors truncate max-w-[150px] md:max-w-none">{letter.judulSurat}</span>
+                            <span className="text-[8px] sm:text-[9px] font-bold text-ink/30 uppercase tracking-[1px] sm:tracking-[2px] mt-1">{letter.nomorSurat}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 sm:px-8 py-4 sm:py-6">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-bg border border-line flex items-center justify-center">
+                              <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-ink/20" />
+                            </div>
+                            <span className="text-xs font-bold text-ink/70 uppercase truncate max-w-[100px] md:max-w-none">{letter.nama || 'UMUM/LEMABAGA'}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 sm:px-8 py-4 sm:py-6">
+                          <div className="flex items-center gap-2 text-ink/40">
+                            <Calendar className="w-3.5 h-3.5 text-accent/40" />
+                            <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest">{formatDate(letter.tanggalSurat)}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 sm:px-8 py-4 sm:py-6 text-right">
+                          <div className="flex items-center justify-end gap-1.5 sm:gap-2" onClick={e => e.stopPropagation()}>
+                            <button onClick={() => onSelect(letter)} className="p-2 sm:p-2.5 bg-bg border border-line rounded-xl text-ink/40 hover:text-accent hover:border-accent transition-all" title="Buka Detail">
+                              <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                            </button>
+                            <button onClick={() => onDelete(letter.id)} className="p-2 sm:p-2.5 bg-bg border border-line rounded-xl text-ink/40 hover:text-red-500 hover:border-red-500 transition-all" title="Hapus">
+                              <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

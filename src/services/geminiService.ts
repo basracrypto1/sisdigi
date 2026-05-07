@@ -20,7 +20,7 @@ const getAI = () => {
 };
 
 export interface GeneratedLetter {
-  type: 'admin' | 'cv' | 'job_app' | 'business' | 'agreement';
+  type: 'admin' | 'cv' | 'job_app' | 'business';
   judulSurat: string;
   keperluan: string; // Used as objective for CV, or bill summary for Business
   narasiSurat: string; // Main body / cover letter content
@@ -84,12 +84,12 @@ Aturan Penulisan Utama:
    - "admin": Surat resmi desa (keterangan, pengantar, permohonan, ahli waris, dll).
      * KHUSUS SURAT PENGANTAR (misal: SKCK, Nikah, Pindah): Judul harus menyertakan tujuan (MISAL: SURAT PENGANTAR CATATAN KEPOLISIAN).
      * NARASI: Harus menyatakan bahwa orang tersebut adalah penduduk desa tersebut dan untuk keperluan apa surat pengantar dibuat.
+     * LAMPIRAN & PENERIMA: Jika permintaan adalah surat permohonan atau undangan, WAJIB isi "lampiran" (misal: "1 (Satu) Berkas") dan "penerima" (misal: "Bapak Camat Tanah Merah").
    - "cv": Curriculum Vitae profesional (modern, ATS-friendly).
-   - "job_app": Surat lamaran pekerjaan yang persuasif.
-   - "business": Invoice, Kuitansi, atau Penawaran Harga. Anda WAJIB mengisi array "items" dengan rincian barang/jasa yang logis.
-   - "agreement": Surat Perjanjian atau Kontrak Legal (Jual Beli, Sewa, Kerja). Gunakan gaya bahasa formal hukum Indonesia ("PIHAK PERTAMA", "PIHAK KEDUA", "PASAL").
+   - "job_app": Surat lamaran pekerjaan yang persuasif. WAJIB isi "penerima" dengan jabatan penerima (misal: "HRD Manager").
+   - "business": Invoice, Kuitansi, atau Penawaran Harga. Anda WAJIB mengisi array "items" dengan rincian barang/jasa yang logis. WAJIB isi "penerima" dengan nama klien/instansi.
 2. PENGGUNAAN BAHASA: Gunakan Bahasa Indonesia Baku (EYD).
-3. JUDUL: Gunakan KAPITAL untuk "admin", "business", dan "agreement". 
+3. JUDUL: Gunakan KAPITAL untuk "admin" dan "business". 
 4. VARIASI NARASI: Berikan 3 pilihan narasi/cover letter (Formal, Kreatif, To-the-point).
 5. CV DATA: Untuk "cv", isi field "keperluan" dengan riwayat objektif/summary profesional yang padat. Anda WAJIB mengisi array "pendidikan", "pengalaman", dan "keahlian" dengan data yang logis berdasarkan prompt.
 6. LAMARAN KERJA: Pastikan "perusahaanTujuan" dan "posisiTujuan" terisi.
@@ -106,7 +106,7 @@ Output harus dalam format JSON murni.`,
         responseSchema: {
           type: Type.OBJECT,
           properties: {
-            type: { type: Type.STRING, enum: ['admin', 'cv', 'job_app', 'business', 'agreement'] },
+            type: { type: Type.STRING, enum: ['admin', 'cv', 'job_app', 'business'] },
             judulSurat: { type: Type.STRING },
             keperluan: { type: Type.STRING },
             opsiNarasi: {

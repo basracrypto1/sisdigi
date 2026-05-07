@@ -46,7 +46,7 @@ export const generatePdfLetter = async (data: LetterData): Promise<void> => {
           minHeight: currentDim.h,
           position: 'static',
           display: 'block',
-          padding: '25mm' // Match the preview padding exactly
+          padding: '0.9cm 2cm 2cm 2.54cm' // Match the requested margins exactly
         });
 
         // REMOVE EDITABLE HINTS & UI ELEMENTS IN CLONE

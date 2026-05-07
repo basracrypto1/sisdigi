@@ -4,7 +4,7 @@ import {
   RefreshCw, User, FileText, Briefcase, Users, Plus, Trash2, GraduationCap,
   ShieldCheck, LayoutDashboard, Database, Signature, Settings2, Sparkles, Upload, Landmark, Image as ImageIcon,
   Mail, Phone, Award, ChevronDown, MapPin, ArrowRight, ArrowLeft, Layout, Receipt, Handshake,
-  Camera, Scan, Loader2
+  Camera, Scan, Loader2, X
 } from 'lucide-react';
 import { AIAssistant } from './AIAssistant';
 import { motion, AnimatePresence } from 'motion/react';
@@ -235,13 +235,13 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
 
   const sections = [
     { id: 'umum', label: 'Dasar', icon: LayoutDashboard },
-    { id: 'penduduk', label: 'Profil', icon: User, types: ['admin', 'cv', 'job_app', 'agreement'] },
+    { id: 'penduduk', label: 'Profil', icon: User, types: ['admin', 'cv', 'job_app'] },
     { id: 'kontak', label: 'Kontak', icon: Mail, types: ['cv', 'job_app', 'business'] },
-    { id: 'jual_beli', label: 'Objek', icon: Landmark, types: ['admin', 'agreement'] },
+    { id: 'jual_beli', label: 'Objek', icon: Landmark, types: ['admin'] },
     { id: 'rincian', label: 'Rincian', icon: Receipt, types: ['business'] },
     { id: 'riwayat', label: 'Karir & Edu', icon: GraduationCap, types: ['cv'] },
-    { id: 'waris_saksi', label: 'Pihak & Saksi', icon: Users, types: ['admin', 'agreement'] },
-    { id: 'isi', label: 'Isi & TTD', icon: FileText, types: ['admin', 'cv', 'job_app', 'business', 'agreement'] },
+    { id: 'waris_saksi', label: 'Pihak & Saksi', icon: Users, types: ['admin'] },
+    { id: 'isi', label: 'Isi & TTD', icon: FileText, types: ['admin', 'cv', 'job_app', 'business'] },
   ].filter(s => !s.types || s.types.includes(data.type)) as any;
 
   const handleNext = () => {
@@ -270,13 +270,13 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
     const isFirst = currentIndex === 0;
 
     return (
-      <div className="flex flex-col sm:flex-row items-center gap-3 pt-10 pb-6 mt-6 border-t border-line/30">
+      <div className="flex flex-col sm:flex-row items-center gap-3 pt-6 sm:pt-10 pb-4 sm:pb-6 mt-4 sm:mt-6 border-t border-line/30">
         {!isFirst ? (
           <button
             onClick={handlePrev}
-            className="w-full sm:flex-1 py-4.5 bg-white border border-line text-ink/60 rounded-2xl font-black text-[10px] uppercase tracking-[3px] hover:bg-ink hover:text-white active:scale-95 transition-all flex items-center justify-center gap-3 group shadow-sm"
+            className="w-full sm:flex-1 py-3.5 sm:py-4.5 bg-white border border-line text-ink/60 rounded-xl sm:rounded-2xl font-black text-[9px] sm:text-[10px] uppercase tracking-[2px] sm:tracking-[3px] hover:bg-ink hover:text-white active:scale-95 transition-all flex items-center justify-center gap-2 sm:gap-3 group shadow-sm"
           >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:-translate-x-1 transition-transform" />
             Kembali
           </button>
         ) : (
@@ -285,15 +285,15 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
         
         <button
           onClick={handleNext}
-          className="w-full sm:flex-[2] py-4.5 bg-accent text-paper rounded-2xl font-black text-[10px] uppercase tracking-[3px] hover:brightness-110 active:scale-95 transition-all shadow-xl shadow-accent/20 flex items-center justify-center gap-3 group overflow-hidden relative"
+          className="w-full sm:flex-[2] py-3.5 sm:py-4.5 bg-accent text-paper rounded-xl sm:rounded-2xl font-black text-[9px] sm:text-[10px] uppercase tracking-[2px] sm:tracking-[3px] hover:brightness-110 active:scale-95 transition-all shadow-xl shadow-accent/20 flex items-center justify-center gap-2 sm:gap-3 group overflow-hidden relative"
         >
           <div className="absolute inset-0 bg-white/10 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
           <span className="relative z-10 flex items-center gap-2">
             {isLast ? 'SELESAI & PREVIEW' : 'SELANJUTNYA'}
-            {!isLast && <span className="opacity-40 font-bold">({sections[currentIndex + 1].label})</span>}
+            {!isLast && <span className="opacity-40 font-bold hidden sm:inline">({sections[currentIndex + 1].label})</span>}
           </span>
-          {!isLast && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform relative z-10" />}
-          {isLast && <FileText className="w-4 h-4 group-hover:scale-110 transition-transform relative z-10" />}
+          {!isLast && <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform relative z-10" />}
+          {isLast && <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:scale-110 transition-transform relative z-10" />}
         </button>
       </div>
     );
@@ -303,7 +303,7 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
     <div id="form-top" className="flex flex-col h-full overflow-hidden">
       {/* Breadcrumbs / Steps Indicator */}
       <div className="flex-shrink-0 mb-4 sm:mb-8 mt-1 sm:mt-2 overflow-x-auto no-scrollbar pb-2 px-4 sm:px-6 md:px-8 lg:px-10">
-        <div className="flex items-center min-w-max gap-3 sm:gap-4">
+        <div className="flex items-center min-w-max gap-2 sm:gap-4">
           {sections.map((s, i) => {
             const isActive = s.id === activeSection;
             const currentIndex = sections.findIndex(sec => sec.id === activeSection);
@@ -313,25 +313,25 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
               <React.Fragment key={s.id}>
                 <button 
                   onClick={() => setActiveSection(s.id as FormSection)}
-                  className={`flex items-center gap-2 sm:gap-3 group text-left transition-all ${isActive ? 'scale-105' : ''}`}
+                  className={`flex items-center gap-1.5 sm:gap-3 group text-left transition-all ${isActive ? 'scale-105' : ''}`}
                 >
                   <div className={`
-                    w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center border-2 transition-all duration-500 flex-shrink-0
+                    w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-2xl flex items-center justify-center border-2 transition-all duration-500 flex-shrink-0
                     ${isActive ? 'bg-accent border-accent text-white shadow-lg shadow-accent/20' : 
                       isPast ? 'bg-accent/10 border-accent/20 text-accent' : 
                       'bg-paper border-line text-ink/20'}
                   `}>
-                    <s.icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isActive ? 'animate-pulse' : ''}`} />
+                    <s.icon className={`w-3 h-3 sm:w-4 sm:h-4 ${isActive ? 'animate-pulse' : ''}`} />
                   </div>
                   <div className="flex flex-col">
-                    <span className={`text-[8px] sm:text-[9px] font-black uppercase tracking-widest leading-none ${isActive ? 'text-ink' : isPast ? 'text-ink/60' : 'text-ink/20'}`}>
+                    <span className={`text-[7px] sm:text-[9px] font-black uppercase tracking-widest leading-none ${isActive ? 'text-ink' : isPast ? 'text-ink/60' : 'text-ink/20'}`}>
                       {s.label}
                     </span>
-                    {isActive && <motion.span layoutId="active-dot" className="w-2.5 sm:w-3 h-[2px] bg-accent mt-1" />}
+                    {isActive && <motion.span layoutId="active-dot" className="w-full h-[1.5px] sm:h-[2px] bg-accent mt-1" />}
                   </div>
                 </button>
                 {i < sections.length - 1 && (
-                  <div className={`w-2 sm:w-4 h-[1px] ${i < currentIndex ? 'bg-accent/30' : 'bg-line'}`} />
+                  <div className={`w-1.5 sm:w-4 h-[1.5px] sm:h-[1px] ${i < currentIndex ? 'bg-accent/30' : 'bg-line'}`} />
                 )}
               </React.Fragment>
             );
@@ -363,7 +363,7 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                     <label className={labelStyle}>Tipe Dokumen</label>
                     <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3">
                       <button
-                        onClick={() => onChange({ ...INITIAL_DATA, type: 'admin', id: data.id })}
+                        onClick={() => onChange({ ...INITIAL_DATA, type: 'admin', id: data.id, lampiran: '-', penerima: '' })}
                         className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all min-w-0 flex flex-col justify-between ${data.type === 'admin' ? 'border-accent bg-accent/5 ring-1 ring-accent/20' : 'border-line hover:border-accent/40'}`}
                       >
                         <div className="flex items-center gap-1.5 mb-1 min-w-0">
@@ -373,7 +373,7 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                         <p className="text-[8px] text-ink/40 leading-tight break-words">Administrasi.</p>
                       </button>
                       <button
-                        onClick={() => onChange({ ...INITIAL_DATA, type: 'cv', id: data.id, paperSize: 'a4', judulSurat: 'CURRICULUM VITAE' })}
+                        onClick={() => onChange({ ...INITIAL_DATA, type: 'cv', id: data.id, paperSize: 'a4', judulSurat: 'CURRICULUM VITAE', penerima: '' })}
                         className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all min-w-0 flex flex-col justify-between ${data.type === 'cv' ? 'border-accent bg-accent/5 ring-1 ring-accent/20' : 'border-line hover:border-accent/40'}`}
                       >
                         <div className="flex items-center gap-1.5 mb-1 min-w-0">
@@ -383,7 +383,7 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                         <p className="text-[8px] text-ink/40 leading-tight break-words">Karir.</p>
                       </button>
                       <button
-                        onClick={() => onChange({ ...INITIAL_DATA, type: 'job_app', id: data.id, paperSize: 'a4', judulSurat: 'Surat Lamaran Kerja' })}
+                        onClick={() => onChange({ ...INITIAL_DATA, type: 'job_app', id: data.id, paperSize: 'a4', judulSurat: 'Surat Lamaran Kerja', penerima: 'Yth. Manajer HRD\nPT. .....................' })}
                         className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all min-w-0 flex flex-col justify-between ${data.type === 'job_app' ? 'border-accent bg-accent/5 ring-1 ring-accent/20' : 'border-line hover:border-accent/40'}`}
                       >
                         <div className="flex items-center gap-1.5 mb-1 min-w-0">
@@ -393,7 +393,7 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                         <p className="text-[8px] text-ink/40 leading-tight break-words">Kerja.</p>
                       </button>
                       <button
-                        onClick={() => onChange({ ...INITIAL_DATA, type: 'business', id: data.id, paperSize: 'a4', judulSurat: 'INVOICE / TAGIHAN' })}
+                        onClick={() => onChange({ ...INITIAL_DATA, type: 'business', id: data.id, paperSize: 'a4', judulSurat: 'INVOICE / TAGIHAN', penerima: 'Yth. Pimpinan Instansi' })}
                         className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all min-w-0 flex flex-col justify-between ${data.type === 'business' ? 'border-accent bg-accent/5 ring-1 ring-accent/20' : 'border-line hover:border-accent/40'}`}
                       >
                         <div className="flex items-center gap-1.5 mb-1 min-w-0">
@@ -401,16 +401,6 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                           <span className={`text-[9px] font-black tracking-widest uppercase truncate ${data.type === 'business' ? 'text-accent' : 'text-ink'}`}>Bisnis</span>
                         </div>
                         <p className="text-[8px] text-ink/40 leading-tight break-words">Invoice.</p>
-                      </button>
-                      <button
-                        onClick={() => onChange({ ...INITIAL_DATA, type: 'agreement', id: data.id, paperSize: 'legal', judulSurat: 'SURAT PERJANJIAN' })}
-                        className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all min-w-0 flex flex-col justify-between ${data.type === 'agreement' ? 'border-accent bg-accent/5 ring-1 ring-accent/20' : 'border-line hover:border-accent/40'}`}
-                      >
-                        <div className="flex items-center gap-1.5 mb-1 min-w-0">
-                          <Handshake className={`flex-shrink-0 w-3 h-3 ${data.type === 'agreement' ? 'text-accent' : 'text-ink/40'}`} />
-                          <span className={`text-[9px] font-black tracking-widest uppercase truncate ${data.type === 'agreement' ? 'text-accent' : 'text-ink'}`}>Legal</span>
-                        </div>
-                        <p className="text-[8px] text-ink/40 leading-tight break-words">Kontrak.</p>
                       </button>
                     </div>
                   </div>
@@ -790,7 +780,7 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                 <div className="p-5 bg-paper border border-line rounded-2xl space-y-6">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <h3 className="text-[11px] font-bold uppercase tracking-widest text-ink/40 flex items-center gap-2">
-                      <User className="w-4 h-4" /> Data Personal Profil
+                      <User className="w-4 h-4" /> Data Personal Profil (Opsional jika ada Pihak)
                     </h3>
                     <div className="flex flex-wrap items-center gap-2">
                       <div className="relative">
@@ -828,9 +818,9 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                           ? 'bg-accent text-white border-accent' 
                           : 'bg-paper text-ink/40 border-line hover:border-accent hover:text-accent'
                         }`}
-                        title="Kosongkan data untuk surat instansi/lembaga"
+                        title="Kosongkan jika ingin menggunakan Pihak 1 & Pihak 2 saja"
                       >
-                        <Landmark className="w-3.5 h-3.5" /> MODE INSTITUSI
+                        <Landmark className="w-3.5 h-3.5" /> LANGSUNG KE PIHAK
                       </button>
                       <button 
                         onClick={() => {
@@ -954,6 +944,84 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                       placeholder="Contoh: 150.000.000"
                     />
                   </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className={labelStyle}>Luas Tanah / Objek</label>
+                      <div className="relative group">
+                        <input 
+                          type="text" 
+                          name="luasTanah" 
+                          value={data.luasTanah || ''} 
+                          onChange={handleChange} 
+                          className={`${inputStyle} pr-16`} 
+                          placeholder="Contoh: 100"
+                        />
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const current = data.luasTanah || '';
+                              if (!current.includes('m²')) {
+                                handleChange({ target: { name: 'luasTanah', value: `${current} m²`.trim() } } as any);
+                              }
+                            }}
+                            className="px-2 py-1 bg-accent/10 hover:bg-accent/20 text-accent text-[9px] font-black rounded-lg transition-colors border border-accent/20"
+                          >
+                            m²
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-accent/5 border border-accent/10 rounded-2xl space-y-4">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-accent">Batas-Batas Tanah</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className={labelStyle}>Sebelah Utara</label>
+                        <input 
+                          type="text" 
+                          name="batasUtara" 
+                          value={data.batasUtara || ''} 
+                          onChange={handleChange} 
+                          className={inputStyle} 
+                          placeholder="Nama pemilik / Jalan"
+                        />
+                      </div>
+                      <div>
+                        <label className={labelStyle}>Sebelah Selatan</label>
+                        <input 
+                          type="text" 
+                          name="batasSelatan" 
+                          value={data.batasSelatan || ''} 
+                          onChange={handleChange} 
+                          className={inputStyle} 
+                          placeholder="Nama pemilik / Jalan"
+                        />
+                      </div>
+                      <div>
+                        <label className={labelStyle}>Sebelah Timur</label>
+                        <input 
+                          type="text" 
+                          name="batasTimur" 
+                          value={data.batasTimur || ''} 
+                          onChange={handleChange} 
+                          className={inputStyle} 
+                          placeholder="Nama pemilik / Jalan"
+                        />
+                      </div>
+                      <div>
+                        <label className={labelStyle}>Sebelah Barat</label>
+                        <input 
+                          type="text" 
+                          name="batasBarat" 
+                          value={data.batasBarat || ''} 
+                          onChange={handleChange} 
+                          className={inputStyle} 
+                          placeholder="Nama pemilik / Jalan"
+                        />
+                      </div>
+                    </div>
+                  </div>
                   <div>
                     <label className={labelStyle}>Detail Informasi Tambahan</label>
                     <textarea 
@@ -994,21 +1062,64 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div className="col-span-1">
                               <label className={labelStyle}>Peran</label>
-                              <input 
-                                type="text" 
-                                placeholder="Penjual/Pembeli"
-                                value={heir.peran || ''} 
-                                onChange={(e) => handleHeirChange(idx, 'peran', e.target.value)} 
-                                className={inputStyle} 
-                              />
+                              <div className="relative">
+                                <input 
+                                  type="text" 
+                                  placeholder="Contoh: Penjual"
+                                  value={heir.peran || ''} 
+                                  onChange={(e) => handleHeirChange(idx, 'peran', e.target.value)} 
+                                  className={inputStyle} 
+                                />
+                                <div className="mt-2 flex gap-2">
+                                  <button
+                                    onClick={() => handleHeirChange(idx, 'peran', 'Penjual')}
+                                    className={`px-2 py-1 rounded text-[9px] font-black uppercase transition-all ${heir.peran === 'Penjual' ? 'bg-accent text-white' : 'bg-accent/10 text-accent hover:bg-accent/20'}`}
+                                  >
+                                    Penjual
+                                  </button>
+                                  <button
+                                    onClick={() => handleHeirChange(idx, 'peran', 'Pembeli')}
+                                    className={`px-2 py-1 rounded text-[9px] font-black uppercase transition-all ${heir.peran === 'Pembeli' ? 'bg-accent text-white' : 'bg-accent/10 text-accent hover:bg-accent/20'}`}
+                                  >
+                                    Pembeli
+                                  </button>
+                                </div>
+                              </div>
                             </div>
                             <div className="col-span-1 sm:col-span-2">
                               <label className={labelStyle}>NIK</label>
                               <input type="text" value={heir.nik} onChange={(e) => handleHeirChange(idx, 'nik', e.target.value)} className={inputStyle} />
                             </div>
                           </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <label className={labelStyle}>Tempat Lahir</label>
+                              <input type="text" value={heir.tempatLahir || ''} onChange={(e) => handleHeirChange(idx, 'tempatLahir', e.target.value)} className={inputStyle} />
+                            </div>
+                            <div>
+                              <label className={labelStyle}>Tanggal Lahir</label>
+                              <input type="date" value={heir.tanggalLahir || ''} onChange={(e) => handleHeirChange(idx, 'tanggalLahir', e.target.value)} className={inputStyle} />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                              <label className={labelStyle}>Jenis Kelamin</label>
+                              <select value={heir.jenisKelamin || 'Laki-laki'} onChange={(e) => handleHeirChange(idx, 'jenisKelamin', e.target.value)} className={inputStyle}>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className={labelStyle}>Pekerjaan</label>
+                              <input type="text" value={heir.pekerjaan || ''} onChange={(e) => handleHeirChange(idx, 'pekerjaan', e.target.value)} className={inputStyle} />
+                            </div>
+                          </div>
                           <div>
-                            <label className={labelStyle}>Hubungan / Keterangan</label>
+                            <label className={labelStyle}>Alamat Lengkap</label>
+                            <input type="text" value={heir.alamat || ''} onChange={(e) => handleHeirChange(idx, 'alamat', e.target.value)} className={inputStyle} />
+                          </div>
+                          <div>
+                            <label className={labelStyle}>Hubungan / Keterangan Tambahan</label>
                             <input type="text" value={heir.hubungan} onChange={(e) => handleHeirChange(idx, 'hubungan', e.target.value)} className={inputStyle} />
                           </div>
                         </div>
@@ -1069,9 +1180,9 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                     </div>
                   )}
 
-                  {(data.type === 'job_app' || data.type === 'admin') && (
+                  {(data.type === 'job_app' || data.type === 'admin' || data.type === 'business' || data.type === 'agreement') && (
                     <div className="grid grid-cols-2 gap-4">
-                      {data.type === 'job_app' ? (
+                      {data.type === 'job_app' && (
                         <>
                           <div className="col-span-full">
                             <label className={labelStyle}>Perusahaan Tujuan</label>
@@ -1082,19 +1193,45 @@ export const LetterForm = forwardRef<LetterFormHandle, Props>(({ data, onChange,
                             <input type="text" name="posisiTujuan" value={data.posisiTujuan || ''} onChange={handleChange} className={inputStyle} placeholder="Contoh: Senior Developer" />
                           </div>
                         </>
-                      ) : (
-                        <div>
+                      )}
+                      
+                      {(data.type === 'admin' || data.type === 'business' || data.type === 'agreement') && (
+                        <div className={data.type === 'business' || data.type === 'agreement' ? 'col-span-full' : ''}>
                           <label className={labelStyle}>Lampiran</label>
-                          <input type="text" name="lampiran" value={data.lampiran || ''} onChange={handleChange} className={inputStyle} placeholder="Contoh: 1 (satu) Berkas" />
-                          <p className="mt-1 text-[10px] text-ink/40 italic font-medium leading-tight">
-                            *Jika diisi, tata letak judul surat akan berpindah ke sisi kiri (format surat dinas).
-                          </p>
+                          <div className="relative">
+                            <input type="text" name="lampiran" value={data.lampiran || ''} onChange={handleChange} className={inputStyle} placeholder="Contoh: 1 (satu) Berkas" />
+                            {data.lampiran && (
+                              <button 
+                                onClick={() => onChange({ ...data, lampiran: '' })}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-ink/20 hover:text-red-500 transition-colors"
+                                title="Hapus Lampiran"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                          {data.type === 'admin' && (
+                            <p className="mt-1 text-[10px] text-ink/40 italic font-medium leading-tight">
+                              *Jika diisi, tata letak judul surat akan berpindah ke sisi kiri (format surat dinas).
+                            </p>
+                          )}
                         </div>
                       )}
                       
-                      <div className={data.type === 'job_app' ? 'col-span-full' : ''}>
+                      <div className="col-span-full">
                         <label className={labelStyle}>{data.type === 'job_app' ? 'Pihak Penerima (Yth.)' : 'Penerima (Kepada Yth)'}</label>
-                        <textarea name="penerima" value={data.penerima || ''} onChange={handleChange} className={`${inputStyle} h-10 resize-none`} placeholder="Contoh: Manajer HRD" />
+                        <div className="relative">
+                          <textarea name="penerima" value={data.penerima || ''} onChange={handleChange} className={`${inputStyle} h-10 resize-none pr-10`} placeholder="Contoh: Manajer HRD" />
+                          {data.penerima && (
+                            <button 
+                              onClick={() => onChange({ ...data, penerima: '' })}
+                              className="absolute right-2 top-2 p-1.5 text-ink/20 hover:text-red-500 transition-colors"
+                              title="Hapus Penerima"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   )}

@@ -75,7 +75,7 @@
     }
     #printable-letter {
       margin: 0 !important;
-      padding: 25mm !important; /* Standard Word margins 1 inch */
+      padding: 0.9cm 2cm 2cm 2.54cm !important;
       box-shadow: none !important;
       border: none !important;
       width: 210mm !important;

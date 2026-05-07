@@ -37,22 +37,24 @@ export const generateWordLetter = async (data: LetterData) => {
     }
   }
 
-  // Routing based on type
-  switch (data.type) {
-    case 'business':
-      sectionChildren = await generateBusinessContent(data, logoImage);
-      break;
-    case 'cv':
-      sectionChildren = await generateCvContent(data);
-      break;
-    case 'job_app':
-      sectionChildren = await generateJobAppContent(data);
-      break;
-    case 'agreement':
-      sectionChildren = await generateAgreementContent(data);
-      break;
-    default:
-      sectionChildren = await generateAdminContent(data, logoImage);
+  // Routing based on type with error safety
+  try {
+    switch (data.type) {
+      case 'business':
+        sectionChildren = await generateBusinessContent(data, logoImage);
+        break;
+      case 'cv':
+        sectionChildren = await generateCvContent(data);
+        break;
+      case 'job_app':
+        sectionChildren = await generateJobAppContent(data);
+        break;
+      default:
+        sectionChildren = await generateAdminContent(data, logoImage);
+    }
+  } catch (error) {
+    console.error("Content generation failed:", error);
+    sectionChildren = [new Paragraph({ children: [new TextRun("Error generating document content.")] })];
   }
 
   const paperTWIPs = {
@@ -72,7 +74,12 @@ export const generateWordLetter = async (data: LetterData) => {
       properties: { 
         page: { 
           size: { width: currentTWIPs.width, height: currentTWIPs.height }, 
-          margin: { top: 720, right: 720, bottom: 720, left: 720 } 
+          margin: { 
+            top: 510,     // 0.9cm
+            right: 1134,   // 2cm
+            bottom: 1134,  // 2cm
+            left: 1440    // 2.54cm
+          } 
         } 
       }, 
       children: sectionChildren 
@@ -224,6 +231,20 @@ async function generateAdminContent(data: LetterData, logoImage: any) {
       }),
       new Paragraph({ children: [new TextRun("")] })
     );
+  } else if (!isFormal && data.ahliWaris && data.ahliWaris.length >= 2) {
+    children.push(
+      new Paragraph({
+        alignment: AlignmentType.BOTH,
+        children: [
+          new TextRun({ 
+            text: `Kepala Desa ${data.desa}, Kecamatan ${data.kecamatan}, Kabupaten ${data.kabupaten}, menerangkan bahwa pada hari ini telah diadakan kesepakatan antara pihak-pihak di bawah ini:`, 
+            size: 24, 
+            font: "Bookman Old Style" 
+          })
+        ],
+        spacing: { after: 200 }
+      })
+    );
   }
 
   // Narasi
@@ -240,7 +261,22 @@ async function generateAdminContent(data: LetterData, logoImage: any) {
   });
 
   // Object/Sales Details
-  if (data.detailObjek || data.hargaJualBeli) {
+  if (data.detailObjek || data.hargaJualBeli || data.luasTanah || data.batasUtara) {
+    const objectRows = [
+      ...(data.detailObjek ? [createDataRow("Detail", data.detailObjek)] : []),
+      ...(data.hargaJualBeli ? [createDataRow("Nilai Transaksi", `Rp. ${data.hargaJualBeli}`)] : []),
+      ...(data.luasTanah ? [createDataRow("Luas Tanah", data.luasTanah)] : []),
+    ];
+
+    if (data.batasUtara || data.batasSelatan || data.batasTimur || data.batasBarat) {
+      objectRows.push(createDataRow("", "")); // Spacer
+      objectRows.push(createDataRow("Batas-Batas Tanah:", ""));
+      if (data.batasUtara) objectRows.push(createDataRow("- Utara", data.batasUtara));
+      if (data.batasSelatan) objectRows.push(createDataRow("- Selatan", data.batasSelatan));
+      if (data.batasTimur) objectRows.push(createDataRow("- Timur", data.batasTimur));
+      if (data.batasBarat) objectRows.push(createDataRow("- Barat", data.batasBarat));
+    }
+
     children.push(
       new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
@@ -252,10 +288,7 @@ async function generateAdminContent(data: LetterData, logoImage: any) {
           insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "auto" },
           insideVertical: { style: BorderStyle.NONE, size: 0, color: "auto" },
         },
-        rows: [
-          ...(data.detailObjek ? [createDataRow("Detail", data.detailObjek)] : []),
-          ...(data.hargaJualBeli ? [createDataRow("Nilai Transaksi", `Rp. ${data.hargaJualBeli}`)] : []),
-        ]
+        rows: objectRows
       }),
       new Paragraph({ children: [new TextRun("")] })
     );
@@ -263,30 +296,47 @@ async function generateAdminContent(data: LetterData, logoImage: any) {
 
   // Heirs/Related parties
   if (data.ahliWaris && data.ahliWaris.length > 0) {
+    data.ahliWaris.forEach((h, i) => {
+      children.push(
+        new Paragraph({ children: [new TextRun({ text: `${h.peran ? h.peran.toUpperCase() : `PIHAK KE-${i + 1}`} :`, bold: true, underline: {}, size: 24, font: "Bookman Old Style" })], spacing: { before: 200, after: 100 } }),
+        new Table({
+          width: { size: 100, type: WidthType.PERCENTAGE },
+          borders: {
+            top: { style: BorderStyle.NONE, size: 0 },
+            bottom: { style: BorderStyle.NONE, size: 0 },
+            left: { style: BorderStyle.NONE, size: 0 },
+            right: { style: BorderStyle.NONE, size: 0 },
+            insideHorizontal: { style: BorderStyle.NONE, size: 0 },
+            insideVertical: { style: BorderStyle.NONE, size: 0 },
+          },
+          rows: [
+            createDataRow("Nama Lengkap", h.nama.toUpperCase()),
+            createDataRow("NIK", h.nik),
+            createDataRow("Tempat, Tgl Lahir", `${h.tempatLahir || '-'}, ${formatDateIndo(h.tanggalLahir || '')}`),
+            createDataRow("Jenis Kelamin", h.jenisKelamin || '-'),
+            createDataRow("Pekerjaan", h.pekerjaan || '-'),
+            createDataRow("Alamat", h.alamat || '-'),
+            ...(h.hubungan ? [createDataRow("Keterangan", h.hubungan)] : []),
+          ]
+        })
+      );
+    });
+  }
+
+  // Saksi-Saksi
+  if (data.saksi && data.saksi.length > 0) {
     children.push(
-      new Paragraph({ children: [new TextRun({ text: "Berikut adalah pihak-pihak terkait:", size: 24, font: "Bookman Old Style" })], spacing: { before: 200, after: 100 } }),
-      new Table({
-        width: { size: 100, type: WidthType.PERCENTAGE },
-        rows: [
-          new TableRow({
-            children: [
-              new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "No", bold: true })] })] }),
-              new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Nama", bold: true })] })] }),
-              new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "NIK", bold: true })] })] }),
-              new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Peran/Hubungan", bold: true })] })] }),
-            ]
-          }),
-          ...data.ahliWaris.map((h, i) => new TableRow({
-            children: [
-              new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: (i + 1).toString() })] })] }),
-              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: h.nama.toUpperCase(), bold: true })] })] }),
-              new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: h.nik })] })] }),
-              new TableCell({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: h.hubungan || h.peran || '-' })] })] }),
-            ]
-          }))
-        ]
-      })
+      new Paragraph({ children: [new TextRun({ text: "Saksi-Saksi:", bold: true, italics: true, size: 24, font: "Bookman Old Style" })], spacing: { before: 200, after: 100 } }),
     );
+    data.saksi.forEach((s, i) => {
+      children.push(
+        new Paragraph({ 
+          children: [new TextRun({ text: `${i + 1}. ${s.nama} (${s.jabatan})`, size: 24, font: "Bookman Old Style" })],
+          indent: { left: 720 },
+          spacing: { after: 100 }
+        })
+      );
+    });
   }
 
   // Footer & Signature
@@ -305,9 +355,94 @@ async function generateAdminContent(data: LetterData, logoImage: any) {
       indent: { firstLine: 720 },
       children: [new TextRun({ text: "Demikian surat keterangan ini kami buat dengan sebenarnya agar dapat dipergunakan sebagaimana mestinya.", size: 24, font: "Bookman Old Style" })],
       spacing: { after: 400 }
-    }),
-    generateSignatureRow(data)
+    })
   );
+
+  // Party Signatures (Penjual/Pembeli)
+  if (data.ahliWaris && data.ahliWaris.length >= 2) {
+    children.push(
+      new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        borders: {
+          top: { style: BorderStyle.NONE, size: 0 },
+          bottom: { style: BorderStyle.NONE, size: 0 },
+          left: { style: BorderStyle.NONE, size: 0 },
+          right: { style: BorderStyle.NONE, size: 0 },
+          insideHorizontal: { style: BorderStyle.NONE, size: 0 },
+          insideVertical: { style: BorderStyle.NONE, size: 0 },
+        },
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                width: { size: 50, type: WidthType.PERCENTAGE },
+                children: [
+                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.ahliWaris[0]?.peran?.toUpperCase() || "PIHAK I", bold: true, size: 24, font: "Bookman Old Style" })] }),
+                  new Paragraph({ children: [] }),
+                  new Paragraph({ children: [] }),
+                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.ahliWaris[0]?.nama.toUpperCase() || "................", bold: true, underline: {}, size: 24, font: "Bookman Old Style" })] }),
+                ]
+              }),
+              new TableCell({
+                width: { size: 50, type: WidthType.PERCENTAGE },
+                children: [
+                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.ahliWaris[1]?.peran?.toUpperCase() || "PIHAK II", bold: true, size: 24, font: "Bookman Old Style" })] }),
+                  new Paragraph({ children: [] }),
+                  new Paragraph({ children: [] }),
+                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.ahliWaris[1]?.nama.toUpperCase() || "................", bold: true, underline: {}, size: 24, font: "Bookman Old Style" })] }),
+                ]
+              }),
+            ]
+          })
+        ]
+      }),
+      new Paragraph({ children: [new TextRun("")] })
+    );
+  }
+
+  // Witness Signatures
+  if (data.saksi && data.saksi.length > 0) {
+    children.push(
+      new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        borders: {
+          top: { style: BorderStyle.NONE, size: 0 },
+          bottom: { style: BorderStyle.NONE, size: 0 },
+          left: { style: BorderStyle.NONE, size: 0 },
+          right: { style: BorderStyle.NONE, size: 0 },
+          insideHorizontal: { style: BorderStyle.NONE, size: 0 },
+          insideVertical: { style: BorderStyle.NONE, size: 0 },
+        },
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                width: { size: 50, type: WidthType.PERCENTAGE },
+                children: [
+                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "SAKSI I", bold: true, size: 24, font: "Bookman Old Style" })] }),
+                  new Paragraph({ children: [] }),
+                  new Paragraph({ children: [] }),
+                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.saksi[0]?.nama.toUpperCase() || "................", bold: true, underline: {}, size: 24, font: "Bookman Old Style" })] }),
+                ]
+              }),
+              new TableCell({
+                width: { size: 50, type: WidthType.PERCENTAGE },
+                children: [
+                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "SAKSI II", bold: true, size: 24, font: "Bookman Old Style" })] }),
+                  new Paragraph({ children: [] }),
+                  new Paragraph({ children: [] }),
+                  new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.saksi[1]?.nama.toUpperCase() || "................", bold: true, underline: {}, size: 24, font: "Bookman Old Style" })] }),
+                ]
+              }),
+            ]
+          })
+        ]
+      }),
+      new Paragraph({ children: [new TextRun("")] })
+    );
+  }
+
+  children.push(generateSignatureRow(data));
 
   if (data.tembusan) {
     children.push(
@@ -562,115 +697,6 @@ async function generateJobAppContent(data: LetterData) {
     new Paragraph({ children: [] }),
     new Paragraph({ children: [] }),
     new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.nama.toUpperCase(), bold: true, underline: {} })] })
-  );
-
-  return children;
-}
-
-async function generateAgreementContent(data: LetterData) {
-  const children: any[] = [];
-  
-  children.push(
-    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.judulSurat.toUpperCase(), bold: true, size: 32, underline: {} })] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `Nomor: ${data.nomorSurat}`, bold: true, size: 22 })] }),
-    new Paragraph({ children: [new TextRun("")], spacing: { after: 400 } })
-  );
-
-  children.push(
-    new Paragraph({ 
-      alignment: AlignmentType.BOTH, 
-      indent: { firstLine: 720 },
-      children: [
-        new TextRun({ text: "Pada hari ini, " }),
-        new TextRun({ text: formatDateIndo(data.tanggalSurat).toUpperCase(), bold: true }),
-        new TextRun({ text: ", bertempat di " }),
-        new TextRun({ text: data.alamatDesa, bold: true, underline: {} }),
-        new TextRun({ text: ", kami yang bertanda tangan di bawah ini:" }),
-      ],
-      spacing: { after: 300 }
-    })
-  );
-
-  // Parties
-  (data.ahliWaris || []).map((pihak, i) => {
-    children.push(
-      new Paragraph({ children: [new TextRun({ text: pihak.peran || `PIHAK KE-${i + 1}`, bold: true, shading: { fill: "000000" }, color: "FFFFFF" })] }),
-      new Table({
-        width: { size: 100, type: WidthType.PERCENTAGE },
-        borders: {
-          top: { style: BorderStyle.NONE, size: 0 },
-          bottom: { style: BorderStyle.NONE, size: 0 },
-          left: { style: BorderStyle.NONE, size: 0 },
-          right: { style: BorderStyle.NONE, size: 0 },
-          insideHorizontal: { style: BorderStyle.NONE, size: 0 },
-          insideVertical: { style: BorderStyle.NONE, size: 0 },
-        },
-        rows: [
-          createDataRow("Nama Lengkap", pihak.nama.toUpperCase()),
-          createDataRow("NIK", pihak.nik),
-          createDataRow("Jabatan/Hubungan", pihak.hubungan || pihak.peran),
-        ]
-      }),
-      new Paragraph({ children: [new TextRun({ text: `Selanjutnya disebut sebagai ${pihak.peran || `PIHAK KE-${i + 1}`}`, italics: true })], spacing: { after: 200 } })
-    );
-  });
-
-  children.push(
-    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "PERNYATAAN KESEPAKATAN", bold: true })], border: { top: { style: BorderStyle.SINGLE }, bottom: { style: BorderStyle.SINGLE } }, spacing: { before: 200, after: 200 } }),
-    ...data.narasiSurat.split('\n').map(p => new Paragraph({ children: [new TextRun({ text: p })], alignment: AlignmentType.BOTH, indent: { firstLine: 720 }, spacing: { after: 200 } }))
-  );
-
-  if (data.detailObjek) {
-    children.push(
-      new Paragraph({ children: [new TextRun({ text: "OBJEK PERJANJIAN:", bold: true })], spacing: { before: 200 } }),
-      new Paragraph({ children: [new TextRun({ text: data.detailObjek })], alignment: AlignmentType.BOTH, border: { left: { style: BorderStyle.DOUBLE, size: 12, color: "2D5A27" } }, indent: { left: 400 }, spacing: { after: 200 } })
-    );
-  }
-
-  // Double signature for parties
-  const partyRows = new TableRow({
-    children: [
-      new TableCell({ 
-        width: { size: 50, type: WidthType.PERCENTAGE }, 
-        children: [
-          new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.ahliWaris[0]?.peran || "PIHAK I", bold: true })] }),
-          new Paragraph({ children: [] }),
-          new Paragraph({ children: [] }),
-          new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.ahliWaris[0]?.nama.toUpperCase() || "................", bold: true, underline: {} })] }),
-        ] 
-      }),
-      new TableCell({ 
-        width: { size: 50, type: WidthType.PERCENTAGE }, 
-        children: [
-          new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.ahliWaris[1]?.peran || "PIHAK II", bold: true })] }),
-          new Paragraph({ children: [] }),
-          new Paragraph({ children: [] }),
-          new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.ahliWaris[1]?.nama.toUpperCase() || "................", bold: true, underline: {} })] }),
-        ] 
-      }),
-    ]
-  });
-
-  children.push(
-    new Paragraph({ children: [new TextRun("")], spacing: { after: 800 } }),
-    new Table({
-      width: { size: 100, type: WidthType.PERCENTAGE },
-      borders: {
-        top: { style: BorderStyle.NONE, size: 0 },
-        bottom: { style: BorderStyle.NONE, size: 0 },
-        left: { style: BorderStyle.NONE, size: 0 },
-        right: { style: BorderStyle.NONE, size: 0 },
-        insideHorizontal: { style: BorderStyle.NONE, size: 0 },
-        insideVertical: { style: BorderStyle.NONE, size: 0 },
-      },
-      rows: [partyRows]
-    }),
-    new Paragraph({ children: [new TextRun("")], spacing: { after: 400 } }),
-    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "MENGETAHUI:", bold: true })] }),
-    new Paragraph({ children: [] }),
-    new Paragraph({ children: [] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.namaKades.toUpperCase(), bold: true, underline: {} })] }),
-    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.jabatanKades.toUpperCase(), size: 16 })] })
   );
 
   return children;

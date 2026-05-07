@@ -14,9 +14,8 @@ import { DataWarga } from './components/DataWarga';
 import { Arsip } from './components/Arsip';
 import { Settings } from './components/Settings';
 import { generateWordLetter } from './lib/wordGenerator';
-import { generatePdfLetter } from './lib/pdfGenerator';
 import { generateLetterNumber } from './lib/utils';
-import { Menu, Download, FileText, CheckCircle2, RefreshCw, History, Heart, X, FileDown, Sparkles, Layout, Edit3, LayoutDashboard, LogIn, LogOut, User as UserIcon, Loader2, Globe } from 'lucide-react';
+import { Menu, Download, FileText, CheckCircle2, RefreshCw, History, Heart, X, Sparkles, Layout, Edit3, LayoutDashboard, LogIn, LogOut, User as UserIcon, Loader2, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 // Mock User for Local Environment
@@ -44,7 +43,6 @@ export default function App() {
   }));
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -65,20 +63,20 @@ export default function App() {
     setCounter(storage.getCounter());
     const settings = storage.getSettings();
     if (settings?.defaults) {
-      // Force migration to CAKRAWANA if it's still the old value
       const defaults = { ...settings.defaults };
-      const isOldData = defaults.desa === 'TANAH MERAH LAOK' || 
+      const isOldData = defaults.desa === 'Cakrawana' || 
                         defaults.kabupaten === 'Cakrawana' || 
                         defaults.kecamatan === 'Wiralaksana' ||
-                        defaults.jabatanKades?.includes('WIBAWA') ||
+                        defaults.namaKades === 'NAFIS BASKARA' ||
                         !defaults.desa;
                         
       if (isOldData) {
         defaults.kabupaten = 'Bangkalan';
         defaults.kecamatan = 'Tanah Merah';
-        defaults.desa = 'Cakrawana';
-        defaults.alamatDesa = 'Jl. Raya Desa Cakrawana, Tanah Merah';
-        defaults.jabatanKades = 'KEPALA DESA';
+        defaults.desa = 'Tanah Merah Laok';
+        defaults.alamatDesa = 'Jl. Raya Desa Tanah Merah Laok, Tanah Merah';
+        defaults.jabatanKades = 'Kepala Desa';
+        defaults.namaKades = 'AZMY HAFIDZ HARIRI, SE';
         storage.saveSettings({ defaults });
       }
       setData(prev => ({ ...prev, ...defaults }));
@@ -137,7 +135,7 @@ export default function App() {
 
   useEffect(() => {
     updateData({ nomorSurat: generateLetterNumber(counter, getLetterCode(data.type)) });
-  }, [counter, data.type]);
+  }, [counter, data.type, data.judulSurat]);
 
   const saveToHistory = () => {
     if (!user) return;
@@ -195,41 +193,25 @@ export default function App() {
       incrementCounter();
       setTimeout(() => setShowSuccess(false), 3000);
     } catch (error) {
+      setErrorMessage('Gagal membuat file Word.');
+      setShowError(true);
+      setTimeout(() => setShowError(false), 5000);
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const handleDownloadPdf = async () => {
-    try {
-      setIsPdfGenerating(true);
-      if (activeTab === 'edit' && window.innerWidth < 1024) {
-        setActiveTab('preview');
-        await new Promise(resolve => setTimeout(resolve, 500));
-      }
-      await generatePdfLetter(data);
-      setSuccessMessage('File PDF berhasil diunduh & masuk daftar Diterbitkan.');
-      setShowSuccess(true);
-      
-      const saved = storage.saveLetter(data);
-      setHistory(storage.getLetters());
-      if (saved) syncToSheets(saved);
-
-      incrementCounter();
-      setTimeout(() => setShowSuccess(false), 3000);
-    } catch (error: any) {
-      setErrorMessage(error.message || 'Gagal membuat PDF.');
-      setShowError(true);
-      setTimeout(() => setShowError(false), 5000);
-    } finally {
-      setIsPdfGenerating(false);
-    }
-  };
-
   const getLetterCode = (type: string) => {
+    if (type === 'admin') {
+      const title = data.judulSurat.toUpperCase();
+      if (title.includes('KETERANGAN')) return 'SKT';
+      if (title.includes('PENGANTAR')) return 'SP';
+      if (title.includes('PERMOHONAN')) return 'SR';
+      return 'SK';
+    }
+    
     switch (type) {
       case 'business': return 'KUI';
-      case 'agreement': return 'SPJ';
       case 'cv': return 'CV';
       case 'job_app': return 'LMR';
       default: return 'SK';
@@ -293,57 +275,68 @@ export default function App() {
           <button onClick={() => setIsSidebarOpen(true)} className="p-2 -ml-2 text-ink hover:text-accent font-bold">
             <Menu className="w-6 h-6" />
           </button>
-          <h1 className="font-display text-lg font-black tracking-tight uppercase">SIS<span className="text-accent underline decoration-accent/20">DIGI</span></h1>
+          <div className="flex flex-col items-center">
+            <h1 className="font-display text-base sm:text-lg font-black tracking-tight uppercase leading-none">
+              SIS<span className="text-accent underline decoration-accent/20">DIGI</span>
+            </h1>
+            <span className="text-[7px] font-bold text-accent uppercase tracking-[2px] mt-1">
+              {currentPage === 'dashboard' ? 'Dashboard' : 
+               currentPage === 'buat-surat' ? 'Buat Surat' :
+               currentPage === 'warga' ? 'Database' :
+               currentPage === 'arsip' ? 'Diterbitkan' : 'Pengaturan'}
+            </span>
+          </div>
           <div className="w-10" />
         </header>
 
         <div className="flex-1 h-full overflow-hidden relative bg-bg">
           <AnimatePresence mode="wait">
             {currentPage === 'dashboard' && (
-              <motion.div key="dashboard" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="h-full overflow-y-auto">
+              <motion.div key="dashboard" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="h-full overflow-y-auto no-scrollbar">
                 <Dashboard history={history} fullPage onClose={() => {}} onStartWriting={() => setCurrentPage('buat-surat')} />
               </motion.div>
             )}
             {currentPage === 'warga' && (
-              <motion.div key="warga" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full">
+              <motion.div key="warga" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full overflow-hidden">
                 <DataWarga onSelectCitizen={handleSelectCitizen} />
               </motion.div>
             )}
             {currentPage === 'arsip' && (
-              <motion.div key="arsip" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full">
+              <motion.div key="arsip" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full overflow-hidden">
                 <Arsip history={history} onSelect={loadFromHistory} onDelete={deleteFromHistory} />
               </motion.div>
             )}
             {currentPage === 'settings' && (
-              <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full">
+              <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full overflow-y-auto no-scrollbar">
                 <Settings currentData={data} onUpdateDefaults={handleUpdateSettings} onClearDatabase={clearDatabase} />
               </motion.div>
             )}
             {currentPage === 'buat-surat' && (
               <motion.div key="buat-surat" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="h-full flex flex-col lg:flex-row relative">
-                <div className="lg:hidden flex border-b border-line bg-white">
-                  <button onClick={() => setActiveTab('edit')} className={`flex-1 py-4 text-[10px] font-bold uppercase transition-all ${activeTab === 'edit' ? 'text-accent border-b-2 border-accent' : 'text-ink/40'}`}>Edit Data</button>
-                  <button onClick={() => setActiveTab('preview')} className={`flex-1 py-4 text-[10px] font-bold uppercase transition-all ${activeTab === 'preview' ? 'text-accent border-b-2 border-accent' : 'text-ink/40'}`}>Preview</button>
+                <div className="lg:hidden flex border-b border-line bg-white shrink-0">
+                  <button onClick={() => setActiveTab('edit')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-[2px] transition-all flex items-center justify-center gap-2 ${activeTab === 'edit' ? 'text-accent border-b-2 border-accent bg-accent/5' : 'text-ink/40'}`}>
+                    <Edit3 className="w-3.5 h-3.5" /> Data Formulir
+                  </button>
+                  <button onClick={() => setActiveTab('preview')} className={`flex-1 py-4 text-[10px] font-black uppercase tracking-[2px] transition-all flex items-center justify-center gap-2 ${activeTab === 'preview' ? 'text-accent border-b-2 border-accent bg-accent/5' : 'text-ink/40'}`}>
+                    <Layout className="w-3.5 h-3.5" /> Pratinjau
+                  </button>
                 </div>
-                <aside className={`w-full lg:w-[480px] h-full flex flex-col bg-bg border-r border-line overflow-y-auto ${activeTab === 'preview' ? 'hidden lg:flex' : 'flex'}`}>
-                  <div className="p-10"><LetterForm ref={formRef} data={data} onChange={updateData} onRefreshNumber={handleRefreshNumber} onFinish={() => setActiveTab('preview')} /></div>
-                  <div className="p-10 pt-0 space-y-3 mt-auto">
+                <aside className={`w-full lg:w-[480px] h-full flex flex-col bg-bg border-r border-line overflow-y-auto no-scrollbar ${activeTab === 'preview' ? 'hidden lg:flex' : 'flex'}`}>
+                  <div className="p-4 sm:p-6 md:p-8 lg:p-10 shrink-0"><LetterForm ref={formRef} data={data} onChange={updateData} onRefreshNumber={handleRefreshNumber} onFinish={() => setActiveTab('preview')} /></div>
+                  <div className="p-6 sm:p-10 pt-0 space-y-3 mt-auto border-t border-line/10 bg-bg/50">
                     <button onClick={handleReset} className="w-full py-4.5 bg-accent/5 border border-accent/20 text-accent rounded-2xl font-black text-[10px] tracking-widest hover:bg-accent hover:text-white transition-all flex items-center justify-center gap-3 uppercase shadow-sm">
                       <RefreshCw className="w-4 h-4" /> BERSIHKAN FORM
                     </button>
                   </div>
                 </aside>
-                <main className={`flex-1 h-full bg-preview-bg overflow-y-auto ${activeTab === 'edit' ? 'hidden lg:block' : 'block'}`}>
-                  <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-3 z-50 lg:left-auto lg:right-10 lg:translate-x-0">
-                    <button onClick={handleDownload} disabled={isGenerating || isPdfGenerating} className="h-14 px-10 bg-white border border-line text-ink rounded-2xl font-black text-[10px] tracking-widest hover:bg-ink hover:text-white transition-all disabled:opacity-40 shadow-2xl flex items-center gap-3 uppercase">
-                      {isGenerating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} WORD
-                    </button>
-                    <button onClick={handleDownloadPdf} disabled={isGenerating || isPdfGenerating} className="h-14 px-10 bg-accent text-white rounded-2xl font-black text-[10px] tracking-widest shadow-2xl flex items-center gap-3 uppercase">
-                      {isPdfGenerating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />} PDF
+                <main className={`flex-1 h-full bg-preview-bg overflow-y-auto no-scrollbar ${activeTab === 'edit' ? 'hidden lg:block' : 'block'}`}>
+                  <div className="fixed bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 sm:gap-3 z-50 lg:left-auto lg:right-10 lg:translate-x-0 w-[90%] sm:w-auto">
+                    <button onClick={handleDownload} disabled={isGenerating} className="flex-1 sm:flex-none h-14 px-10 sm:px-16 bg-accent border border-accent/20 text-white rounded-2xl font-black text-xs tracking-[2px] hover:bg-accent/90 transition-all disabled:opacity-40 shadow-2xl flex items-center justify-center gap-3 uppercase">
+                      {isGenerating ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />} UNDUH WORD (.DOCX)
                     </button>
                   </div>
-                  <div className="flex justify-center py-20 p-4">
-                    <div className="transform origin-top scale-[0.4] sm:scale-[0.6] md:scale-[0.8] lg:scale-[0.7] xl:scale-[0.85] 2xl:scale-100">
+                  <div className="flex justify-center py-10 sm:py-20 p-4 min-h-full">
+                    <div className="transform origin-top scale-[0.35] xs:scale-[0.45] sm:scale-[0.6] md:scale-[0.8] lg:scale-[0.75] xl:scale-[0.85] 2xl:scale-100 transition-transform duration-500">
                       <LetterPreview data={data} onUpdate={updateData} onSwitchToEdit={handleSwitchToEdit} />
                     </div>
                   </div>

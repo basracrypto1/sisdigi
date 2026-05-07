@@ -304,7 +304,7 @@ export const Dashboard: React.FC<Props> = ({
       
       {/* Footer Credit - Minimal */}
       <div className="py-4 bg-white border-t border-line flex justify-center opacity-30">
-        <p className="text-[7px] font-black uppercase tracking-[3px]">FAHRUL ANAM • ALPHA RELEASE 2.0</p>
+        <p className="text-[7px] font-black uppercase tracking-[3px]">DESA TANAH MERAH LAOK • ALPHA RELEASE 2.0</p>
       </div>
     </div>
   );

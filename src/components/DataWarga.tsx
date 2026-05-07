@@ -284,58 +284,63 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
   return (
     <div className="flex flex-col h-full bg-bg p-4 sm:p-8 md:p-10">
       {/* Header Area */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 sm:mb-10">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-accent/10 flex items-center justify-center">
               <User className="w-5 h-5 text-accent" />
             </div>
-            <h2 className="text-3xl font-black text-ink tracking-tight uppercase">Data Database</h2>
+            <h2 className="text-2xl sm:text-3xl font-black text-ink tracking-tight uppercase">Data Database</h2>
           </div>
-          <p className="text-[10px] font-bold text-ink/30 uppercase tracking-[3px] ml-13">Direktori Penduduk (Lokal)</p>
+          <p className="text-[9px] sm:text-[10px] font-bold text-ink/30 uppercase tracking-[2px] sm:tracking-[3px] ml-13">Direktori Penduduk (Lokal)</p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative">
-            <input 
-              type="file" 
-              accept=".csv"
-              onChange={handleImport}
-              className="absolute inset-0 opacity-0 cursor-pointer z-10"
-              disabled={isImporting}
-            />
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:flex-initial">
+              <input 
+                type="file" 
+                accept=".csv"
+                onChange={handleImport}
+                className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                disabled={isImporting}
+              />
+              <button 
+                disabled={isImporting}
+                className="w-full flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-line text-ink/60 rounded-xl sm:rounded-2xl font-black text-[8px] sm:text-[9px] uppercase tracking-[1px] sm:tracking-[2px] transition-all hover:bg-ink hover:text-white disabled:opacity-30"
+              >
+                {isImporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+                <span className="hidden xs:inline">IMPOR CSV</span>
+                <span className="xs:hidden">IMPORT</span>
+              </button>
+            </div>
             <button 
-              disabled={isImporting}
-              className="flex items-center gap-2 px-4 py-3 bg-white border border-line text-ink/60 rounded-2xl font-black text-[9px] uppercase tracking-[2px] transition-all hover:bg-ink hover:text-white disabled:opacity-30"
+              onClick={handleExportExcel}
+              disabled={isExportingExcel || citizens.length === 0}
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-green-50 border border-green-200 text-green-700 rounded-xl sm:rounded-2xl font-black text-[8px] sm:text-[9px] uppercase tracking-[1px] sm:tracking-[2px] transition-all hover:bg-green-600 hover:text-white disabled:opacity-30"
             >
-              {isImporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-              IMPOR CSV
+              {isExportingExcel ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+              <span className="hidden xs:inline">EKSPOR EXCEL</span>
+              <span className="xs:hidden">EXCEL</span>
+            </button>
+            <button 
+              onClick={handleExport}
+              disabled={isExporting || citizens.length === 0}
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-line text-ink/60 rounded-xl sm:rounded-2xl font-black text-[8px] sm:text-[9px] uppercase tracking-[1px] sm:tracking-[2px] transition-all hover:bg-ink hover:text-white disabled:opacity-30"
+            >
+              <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">EKSPOR CSV</span>
+              <span className="xs:hidden">CSV</span>
             </button>
           </div>
-          <button 
-            onClick={handleExportExcel}
-            disabled={isExportingExcel || citizens.length === 0}
-            className="flex items-center gap-2 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-2xl font-black text-[9px] uppercase tracking-[2px] transition-all hover:bg-green-600 hover:text-white disabled:opacity-30"
-          >
-            {isExportingExcel ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
-            EKSPOR EXCEL
-          </button>
-          <button 
-            onClick={handleExport}
-            disabled={isExporting || citizens.length === 0}
-            className="flex items-center gap-2 px-4 py-3 bg-white border border-line text-ink/60 rounded-2xl font-black text-[9px] uppercase tracking-[2px] transition-all hover:bg-ink hover:text-white disabled:opacity-30"
-          >
-            <Download className="w-4 h-4" />
-            EKSPOR CSV
-          </button>
-          <div className="relative group flex-1 md:w-64">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/20 group-focus-within:text-accent transition-colors" />
+          <div className="relative group w-full md:w-64">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-ink/20 group-focus-within:text-accent transition-colors" />
             <input 
               type="text" 
               placeholder="CARI NAMA ATAU NIK..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white border border-line rounded-2xl text-[10px] uppercase font-bold tracking-widest focus:border-accent outline-none shadow-sm transition-all"
+              className="w-full pl-11 sm:pl-12 pr-4 py-2.5 sm:py-3 bg-white border border-line rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] uppercase font-bold tracking-widest focus:border-accent outline-none shadow-sm transition-all"
             />
           </div>
           <button 
@@ -344,7 +349,7 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
               setFormData({ jenisKelamin: 'Laki-laki' });
               setShowAddModal(true);
             }}
-            className="flex items-center gap-3 px-6 py-3 bg-accent text-white rounded-2xl font-black text-[10px] uppercase tracking-[2px] shadow-xl shadow-accent/20 hover:brightness-110 active:scale-95 transition-all"
+            className="w-full sm:w-auto flex items-center justify-center gap-3 px-6 py-3 sm:py-3.5 bg-accent text-white rounded-xl sm:rounded-2xl font-black text-[9px] sm:text-[10px] uppercase tracking-[2px] shadow-xl shadow-accent/20 hover:brightness-110 active:scale-95 transition-all mt-2 sm:mt-0"
           >
             <Plus className="w-4 h-4" /> TAMBAH WARGA
           </button>

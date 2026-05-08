@@ -152,8 +152,20 @@ export const AIBannerGenerator: React.FC = () => {
         contents: `Tingkatkan prompt ini agar menjadi instruksi desain grafis yang sangat profesional, realistis, dan estetik untuk sebuah banner. Cantumkan detail tentang komposisi, pencahayaan, tekstur, dan atmosphere. Prompt asli: "${prompt}". Hasil harus dalam Bahasa Inggris dan ringkas namun padat detail. Tanpa kata "Okay" atau penjelasan, langsung berikan prompt yang ditingkatkan saja.`
       });
       setPrompt(res.text.trim());
-    } catch (error) {
+    } catch (error: any) {
       console.error("Enhance failed:", error);
+      const isQuota = 
+        error?.error?.code === 429 || 
+        error?.status === 429 || 
+        error?.error?.status === "RESOURCE_EXHAUSTED" ||
+        error?.message?.includes('RESOURCE_EXHAUSTED') || 
+        error?.message?.includes('429');
+
+      if (isQuota) {
+        alert("Batas penggunaan AI (Quota) telah tercapai. Silakan tunggu beberapa saat atau coba lagi besok.");
+      } else {
+        alert("Gagal mengoptimalkan teks. Silakan coba lagi.");
+      }
     } finally {
       setIsEnhancing(false);
     }
@@ -224,9 +236,20 @@ export const AIBannerGenerator: React.FC = () => {
           console.warn("LocalStorage quota exceeded, history will not persist after refresh", e);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Generation failed:", error);
-      alert("Gagal membuat gambar. Silakan coba lagi.");
+      const isQuota = 
+        error?.error?.code === 429 || 
+        error?.status === 429 || 
+        error?.error?.status === "RESOURCE_EXHAUSTED" ||
+        error?.message?.includes('RESOURCE_EXHAUSTED') || 
+        error?.message?.includes('429');
+
+      if (isQuota) {
+        alert("Batas pembuatan gambar AI (Quota) telah tercapai. Akun gratis Gemini memiliki limit per menit dan harian. Silakan coba beberapa saat lagi atau besok.");
+      } else {
+        alert("Gagal membuat gambar. Silakan coba lagi.");
+      }
     } finally {
       setIsGenerating(false);
     }

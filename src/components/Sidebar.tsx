@@ -10,12 +10,13 @@ import {
   MessageSquare,
   Sparkles,
   LogOut,
-  Menu
+  Menu,
+  Calculator
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { User } from 'firebase/auth';
 
-export type PageId = 'dashboard' | 'warga' | 'buat-surat' | 'arsip' | 'settings' | 'banner-generator';
+export type PageId = 'dashboard' | 'warga' | 'buat-surat' | 'arsip' | 'settings' | 'banner-generator' | 'budget-ai';
 
 interface Props {
   activePage: PageId;
@@ -39,6 +40,7 @@ export const Sidebar: React.FC<Props> = ({
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, desc: 'Statistik & Ringkasan' },
     { id: 'buat-surat', label: 'Buat Surat', icon: FilePlus, desc: 'Generator Dokumen AI' },
+    { id: 'budget-ai', label: 'RAB AI', icon: Calculator, desc: 'Estimasi Anggaran Otomatis' },
     { id: 'banner-generator', label: 'AI Banner', icon: Sparkles, desc: 'Premium Visual Design' },
     { id: 'warga', label: 'Data Warga', icon: Users, desc: 'Direktori Penduduk' },
     { id: 'arsip', label: 'Diterbitkan', icon: Archive, desc: 'Surat Terbit' },

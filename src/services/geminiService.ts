@@ -68,6 +68,41 @@ export interface GeneratedLetter {
   posisiTujuan?: string;
 }
 
+const handleAIError = (error: any) => {
+  const errorMessage = error?.message || "";
+  const errorCode = error?.error?.code || error?.code || 0;
+  const errorStatus = error?.error?.status || error?.status || "";
+
+  const isQuota = 
+    errorCode === 429 || 
+    errorStatus === "RESOURCE_EXHAUSTED" || 
+    errorMessage.includes("429") || 
+    errorMessage.includes("Quota") ||
+    errorMessage.includes("RESOURCE_EXHAUSTED");
+
+  const is403 = errorCode === 403 || errorMessage.includes("403");
+  const is404 = errorCode === 404 || errorMessage.includes("404");
+  const isRpcError = errorMessage.includes("Rpc failed") || errorMessage.includes("xhr error") || errorMessage.includes("network error");
+
+  if (isQuota) {
+    throw new Error("Batas pemakaian AI (Quota) terlampaui. Akun gratis Gemini memiliki limit per menit dan harian. Silakan tunggu beberapa saat atau coba lagi besok.");
+  }
+
+  if (is403) {
+    throw new Error("Izin akses AI ditolak. Silakan periksa konfigurasi API Key Anda di menu Settings.");
+  }
+
+  if (is404) {
+    throw new Error("Layanan AI tidak ditemukan (404). Model yang diminta mungkin tidak tersedia di wilayah Anda atau sudah kedaluwarsa.");
+  }
+
+  if (isRpcError) {
+    throw new Error(`Gagal terhubung ke layanan AI (Eror Jaringan/RPC). Hal ini bisa terjadi karena gangguan koneksi, ekstensi browser (Adblocker), atau proxy. detail: ${errorMessage.substring(0, 50)}`);
+  }
+
+  throw error;
+};
+
 export const generateLetterContent = async (prompt: string, retryCount = 0): Promise<GeneratedLetter> => {
   const ai = getAI();
   try {
@@ -217,28 +252,7 @@ Output harus dalam format JSON murni.`,
       return generateLetterContent(prompt, retryCount + 1);
     }
 
-    const is403 = error?.error?.code === 403 || error?.code === 403 || (error?.message && error.message.includes("403"));
-    const is404 = error?.error?.code === 404 || error?.code === 404 || (error?.message && error.message.includes("404"));
-    const isRpcError = error?.message && (error.message.includes("Rpc failed") || error.message.includes("xhr error") || error.message.includes("network error"));
-    const isQuota = error?.message && (error.message.includes("429") || error.message.includes("Quota"));
-    
-    if (is403) {
-      throw new Error("Izin akses AI ditolak. Silakan periksa konfigurasi API Key Anda di menu Settings.");
-    }
-
-    if (is404) {
-      throw new Error("Layanan AI tidak ditemukan (404). Model yang diminta mungkin tidak tersedia di wilayah Anda atau sudah kedaluwarsa.");
-    }
-
-    if (isQuota) {
-      throw new Error("Batas pemakaian AI (Quota) terlampaui. Silakan tunggu beberapa menit atau gunakan API Key lain.");
-    }
-
-    if (isRpcError) {
-      throw new Error(`Gagal terhubung ke layanan AI (Eror Jaringan/RPC). Hal ini bisa terjadi karena gangguan koneksi, ekstensi browser (Adblocker), atau proxy. Pastikan koneksi stabil & coba matikan Adblocker. detail: ${error.message.substring(0, 50)}`);
-    }
-
-    throw error;
+    return handleAIError(error);
   }
 };
 
@@ -301,7 +315,7 @@ Pastikan output hanya JSON murni sesuai schema.`
     }
     
     console.error("KTP Scanning Error:", error);
-    throw new Error("Gagal memproses foto KTP (Eror Layanan AI). Pastikan foto jelas dan coba lagi dalam beberapa saat.");
+    return handleAIError(error);
   }
 };
 
@@ -331,6 +345,6 @@ export const generateBannerImage = async (prompt: string, aspectRatio: string = 
     throw new Error("No image data received from AI.");
   } catch (error: any) {
     console.error("Banner Image Generation Error:", error);
-    throw error;
+    return handleAIError(error);
   }
 };

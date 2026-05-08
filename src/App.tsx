@@ -14,6 +14,7 @@ import { DataWarga } from './components/DataWarga';
 import { Arsip } from './components/Arsip';
 import { Settings } from './components/Settings';
 import { AIBannerGenerator } from './components/AIBannerGenerator';
+import { BudgetGenerator } from './components/BudgetGenerator';
 import { generateWordLetter } from './lib/wordGenerator';
 import { generateLetterNumber } from './lib/utils';
 import { Menu, Download, FileText, CheckCircle2, RefreshCw, History, Heart, X, Sparkles, Layout, Edit3, LayoutDashboard, LogIn, LogOut, User as UserIcon, Loader2, Globe } from 'lucide-react';
@@ -318,6 +319,11 @@ export default function App() {
             {currentPage === 'banner-generator' && (
               <motion.div key="banner-generator" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full overflow-hidden">
                 <AIBannerGenerator />
+              </motion.div>
+            )}
+            {currentPage === 'budget-ai' && (
+              <motion.div key="budget-ai" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full overflow-hidden">
+                <BudgetGenerator />
               </motion.div>
             )}
             {currentPage === 'settings' && (

@@ -27,6 +27,7 @@ import { Document, Packer, Paragraph, Table, TableRow, TableCell, WidthType, Ali
 import { saveAs } from 'file-saver';
 
 import { generateRabAI } from '../services/rabAI';
+import { syncRabToSheet } from '../services/sheets';
 
 interface RabItem {
   id?: string;
@@ -53,6 +54,7 @@ export const BudgetGenerator: React.FC = () => {
   const [judul, setJudul] = useState('');
   const [jenis, setJenis] = useState('Pembangunan');
   const [anggaran, setAnggaran] = useState('');
+  const [level, setLevel] = useState<1 | 2 | 3>(2);
   const [keterangan, setKeterangan] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<RabData | null>(null);
@@ -87,7 +89,8 @@ export const BudgetGenerator: React.FC = () => {
         judul,
         jenis,
         total_anggaran: Number(anggaran),
-        keterangan
+        keterangan,
+        level
       });
 
       const itemsWithIds = data.items.map((item: RabItem, idx: number) => ({ 
@@ -146,6 +149,21 @@ export const BudgetGenerator: React.FC = () => {
   };
 
   const totalActual = result?.items.reduce((sum, item) => sum + item.subtotal, 0) || 0;
+
+  const saveToSheets = async () => {
+    if (!result) return;
+    setIsGenerating(true);
+    setError(null);
+    try {
+      await syncRabToSheet(result);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err: any) {
+      setError('Gagal simpan ke Google Sheets: ' + err.message);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const exportPDF = () => {
     if (!result) return;
@@ -347,6 +365,29 @@ export const BudgetGenerator: React.FC = () => {
               </div>
 
               <div className="space-y-1.5">
+                <label className="text-[9px] font-black text-ink/30 uppercase tracking-widest ml-1">Tingkat Detail AI</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { val: 1, label: 'Singkat' },
+                    { val: 2, label: 'Standar' },
+                    { val: 3, label: 'Rinci' }
+                  ].map((l) => (
+                    <button
+                      key={l.val}
+                      onClick={() => setLevel(l.val as 1 | 2 | 3)}
+                      className={`py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border ${
+                        level === l.val 
+                          ? 'bg-red-500 border-red-500 text-white shadow-sm' 
+                          : 'bg-bg border-line text-ink/40 hover:border-red-200'
+                      }`}
+                    >
+                      {l.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
                 <label className="text-[9px] font-black text-ink/30 uppercase tracking-widest ml-1">Deskripsi Tambahan</label>
                 <textarea
                   value={keterangan}
@@ -467,6 +508,14 @@ export const BudgetGenerator: React.FC = () => {
                     >
                       {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                       <span className="text-[9px] font-black uppercase tracking-widest pr-1">Copy</span>
+                    </button>
+                    <button 
+                      onClick={saveToSheets}
+                      disabled={isGenerating}
+                      className="p-3 bg-green-500 text-white rounded-2xl hover:brightness-110 shadow-lg shadow-green-500/20 transition-all flex items-center gap-2"
+                    >
+                       {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />}
+                       <span className="text-[9px] font-black uppercase tracking-widest pr-1">Sync ke Sheets</span>
                     </button>
                     <button 
                       onClick={() => {

@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { LetterData, INITIAL_DATA, SavedLetter, Citizen } from './types';
 import { storage } from './lib/localDb';
+import { syncLetterToSheet } from './services/sheets';
 import { LetterForm, LetterFormHandle, FormSection } from './components/LetterForm';
 import { LetterPreview } from './components/LetterPreview';
 import { Dashboard } from './components/Dashboard';
@@ -97,8 +98,7 @@ export default function App() {
   const syncToSheets = async (letter: SavedLetter) => {
     try {
       setIsSyncing(true);
-      const { googleSheetsService } = await import('./services/sheetsService');
-      await googleSheetsService.saveLetterToSheet(data.googleAppScriptUrl, letter);
+      await syncLetterToSheet(letter);
     } catch (err) {
       console.error("Sync error:", err);
     } finally {
@@ -190,7 +190,11 @@ export default function App() {
       
       const saved = storage.saveLetter(data);
       setHistory(storage.getLetters());
-      if (saved) syncToSheets(saved);
+      
+      // Auto-sync to Sheets
+      if (saved) {
+        syncToSheets(saved).catch(console.error);
+      }
       
       incrementCounter();
       setTimeout(() => setShowSuccess(false), 3000);

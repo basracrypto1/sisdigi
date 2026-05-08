@@ -5,6 +5,7 @@ interface RabInput {
   total_anggaran: number;
   jenis: string;
   keterangan?: string;
+  level?: 1 | 2 | 3;
 }
 
 export const generateRabAI = async (input: RabInput) => {
@@ -15,6 +16,12 @@ export const generateRabAI = async (input: RabInput) => {
 
   const ai = new GoogleGenAI({ apiKey });
   
+  const levelDescription = {
+    1: "SINGKAT (5-7 item utama saja)",
+    2: "STANDAR (10-15 item rincian umum)",
+    3: "SANGAT RINCI (20+ item rincian mendalam termasuk komponen terkecil)"
+  }[input.level || 2];
+
   const prompt = `
   Anda adalah seorang ahli estimasi biaya (Quantity Surveyor) profesional di Indonesia.
   Buat rincian anggaran biaya (RAB) yang realistis, logis, dan detail untuk kegiatan berikut:
@@ -22,6 +29,7 @@ export const generateRabAI = async (input: RabInput) => {
   - Jenis Kegiatan: ${input.jenis}
   - Total Dana Tersedia: Rp ${input.total_anggaran.toLocaleString('id-ID')}
   - Keterangan Tambahan: ${input.keterangan || 'Tidak ada'}
+  - Tingkat Detail: ${levelDescription}
 
   INSTRUKSI KHUSUS:
   1. Bagikan total anggaran secara proporsional dan masuk akal sesuai standar harga di Indonesia saat ini.
@@ -30,6 +38,7 @@ export const generateRabAI = async (input: RabInput) => {
   4. Berikan output dalam format JSON sesuai schema.
   5. Pastikan subtotal = qty * harga_satuan.
   6. Pastikan jumlah total seluruh subtotal = ${input.total_anggaran}.
+  7. Sesuaikan jumlah item rincian dengan Tingkat Detail yang diminta: ${levelDescription}.
   `;
 
   try {

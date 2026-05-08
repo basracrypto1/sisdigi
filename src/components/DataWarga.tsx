@@ -3,13 +3,13 @@ import { Citizen } from '../types';
 import { 
   Plus, Search, User, Trash2, Edit3, 
   ChevronRight, Download, Upload,
-  FileText, X, Camera, Scan, Loader2, RefreshCw
+  FileText, X, Camera, Scan, Loader2, RefreshCw, Globe
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toTitleCase, toSentenceCase } from '../lib/utils';
 import { scanKtp } from '../services/geminiService';
 import { storage } from '../lib/localDb';
-import { googleSheetsService } from '../services/sheetsService';
+import { syncCitizensToSheet } from '../services/sheets';
 import * as XLSX from 'xlsx';
 
 interface Props {
@@ -228,16 +228,24 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
       const updatedCitizens = storage.getCitizens();
       setCitizens(updatedCitizens);
       alert(`Berhasil impor data warga.`);
-      
-      // Silent Auto-sync to Sheets
-      const settings = storage.getSettings();
-      googleSheetsService.syncCitizens(settings?.defaults?.googleAppScriptUrl, updatedCitizens).catch(console.error);
     } catch (err) {
       console.error("Import error:", err);
       alert('Gagal impor data.');
     } finally {
       setIsImporting(false);
       e.target.value = '';
+    }
+  };
+
+  const handleSyncCloud = async () => {
+    setIsSyncing(true);
+    try {
+      await syncCitizensToSheet(citizens);
+      alert('Berhasil sinkronisasi data ke Google Sheets!');
+    } catch (err: any) {
+      alert('Gagal sinkronisasi: ' + err.message);
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -254,10 +262,6 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
       setShowAddModal(false);
       setEditingCitizen(null);
       setFormData({ jenisKelamin: 'Laki-laki' });
-
-      // Silent Auto-sync to Sheets
-      const settings = storage.getSettings();
-      googleSheetsService.syncCitizens(settings?.defaults?.googleAppScriptUrl, updatedCitizens).catch(console.error);
     } catch (err: any) {
       console.error(err);
     } finally {
@@ -270,10 +274,6 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
     storage.deleteCitizen(id);
     const updatedCitizens = storage.getCitizens();
     setCitizens(updatedCitizens);
-
-    // Silent Auto-sync to Sheets
-    const settings = storage.getSettings();
-    googleSheetsService.syncCitizens(settings?.defaults?.googleAppScriptUrl, updatedCitizens).catch(console.error);
   };
 
   const filtered = citizens.filter(c => 
@@ -322,6 +322,15 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
               {isExportingExcel ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
               <span className="hidden xs:inline">EKSPOR EXCEL</span>
               <span className="xs:hidden">EXCEL</span>
+            </button>
+            <button 
+              onClick={handleSyncCloud}
+              disabled={isSyncing || citizens.length === 0}
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-paper border border-accent/20 text-accent rounded-xl sm:rounded-2xl font-black text-[8px] sm:text-[9px] uppercase tracking-[1px] sm:tracking-[2px] transition-all hover:bg-accent hover:text-white disabled:opacity-30"
+            >
+              {isSyncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Globe className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
+              <span className="hidden xs:inline">SYNC CLOUD</span>
+              <span className="xs:hidden">SYNC</span>
             </button>
             <button 
               onClick={handleExport}

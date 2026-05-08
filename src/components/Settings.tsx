@@ -197,62 +197,6 @@ export const Settings: React.FC<Props> = ({ currentData, onUpdateDefaults, onCle
                 </div>
               )}
 
-              {activeTab === 'cloud' && (
-                <div className="space-y-8">
-                  <div className="p-6 bg-green-50 border border-green-100 rounded-3xl flex items-start gap-4">
-                    <Globe className="w-5 h-5 text-green-600 shrink-0 mt-1" />
-                    <div>
-                      <p className="text-[10px] font-black text-green-700 uppercase tracking-widest leading-tight mb-1">Google Sheets (via App Script)</p>
-                      <p className="text-[9px] text-green-600/70 font-bold uppercase tracking-wide leading-relaxed">
-                        Metode ini tidak memerlukan login Google di aplikasi. Cukup pasang script di Google Sheets Anda dan masukkan URL-nya di sini.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between p-6 bg-bg border border-line rounded-3xl">
-                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-ink">Aktifkan Sinkronisasi</p>
-                        <p className="text-[8px] font-bold text-ink/30 uppercase mt-0.5">Simpan ke Google Sheets secara otomatis</p>
-                      </div>
-                      <button 
-                        onClick={() => setConfig({ ...config, googleSheetEnabled: !config.googleSheetEnabled })}
-                        className={`w-12 h-6 rounded-full transition-all relative ${config.googleSheetEnabled ? 'bg-accent' : 'bg-line'}`}
-                      >
-                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-paper transition-all ${config.googleSheetEnabled ? 'left-7' : 'left-1'}`} />
-                      </button>
-                    </div>
-
-                    <div>
-                      <label className={labelStyle}>URL Google App Script Web App</label>
-                      <input 
-                        type="text" 
-                        placeholder="https://script.google.com/macros/s/.../exec"
-                        value={config.googleAppScriptUrl || ''} 
-                        onChange={e => setConfig({...config, googleAppScriptUrl: e.target.value})} 
-                        className={inputStyle} 
-                      />
-                      <p className="mt-4 text-[8px] font-bold text-ink/20 uppercase tracking-[2px] leading-relaxed">
-                        * PASTIKAN SCRIPT SUDAH DI-DEPLOY SEBAGAI "WEB APP" DENGAN AKSES "ANYONE".
-                      </p>
-                    </div>
-
-                    <div className="p-6 bg-bg border border-line rounded-3xl">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-ink mb-4">Cara Mendapatkan URL:</p>
-                      <ol className="list-decimal list-inside space-y-2 text-[9px] font-bold text-ink/40 uppercase tracking-wide">
-                        <li>BUKA GOOGLE SHEETS ANDA</li>
-                        <li>MENU: EXTENSIONS &gt; APPS SCRIPT</li>
-                        <li>PASTE KODE SCRIPT YANG SAYA BERIKAN</li>
-                        <li>KLIK: DEPLOY &gt; NEW DEPLOYMENT</li>
-                        <li>SELECT TYPE: WEB APP</li>
-                        <li>WHO HAS ACCESS: ANYONE</li>
-                        <li>SALIN URL WEB APP DAN PASTE DI ATAS</li>
-                      </ol>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {activeTab === 'sistem' && (
                 <div className="space-y-10">
                   <div className="space-y-4">

@@ -3,7 +3,6 @@ import { createServer as createViteServer } from "vite";
 import path from "path";
 import cors from "cors";
 import morgan from "morgan";
-
 async function startServer() {
   const app = express();
   const PORT = 3000;

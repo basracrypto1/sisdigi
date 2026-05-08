@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { SavedLetter } from '../types';
+import { callAppsScript } from '../services/sheets';
 import { 
   Archive, Search, Filter, Calendar, 
   Trash2, FileDown, Eye, MoreVertical,
   ChevronRight, FileText, LayoutGrid, List as ListIcon,
-  Download, Clock, User
+  Download, Clock, User, Loader2, Globe
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -17,6 +18,30 @@ interface Props {
 export const Arsip: React.FC<Props> = ({ history, onSelect, onDelete }) => {
   const [search, setSearch] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSyncCloud = async () => {
+    setIsSyncing(true);
+    try {
+      const headers = [['ID', 'Nomor Surat', 'Jenis', 'Tanggal', 'Nama', 'NIK', 'Keperluan', 'Terakhir Update']];
+      const rows = history.map(l => [
+        l.id,
+        l.nomorSurat,
+        l.type,
+        l.tanggalSurat,
+        l.nama,
+        l.nik,
+        l.keperluan,
+        l.updatedAt
+      ]);
+      await callAppsScript('update', 'Arsip', 'A1', [...headers, ...rows]);
+      alert('Berhasil sinkronisasi arsip ke Google Sheets!');
+    } catch (err: any) {
+      alert('Gagal sinkronisasi: ' + err.message);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const filtered = history.filter(l => 
     l.nama.toLowerCase().includes(search.toLowerCase()) || 
@@ -47,6 +72,14 @@ export const Arsip: React.FC<Props> = ({ history, onSelect, onDelete }) => {
         </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <button 
+            onClick={handleSyncCloud}
+            disabled={isSyncing || history.length === 0}
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-paper border border-accent/20 text-accent rounded-2xl font-black text-[9px] uppercase tracking-[2px] transition-all hover:bg-accent hover:text-white disabled:opacity-30 shadow-sm"
+          >
+            {isSyncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Globe className="w-4 h-4" />}
+            <span>SYNC CLOUD</span>
+          </button>
           <div className="relative group flex-1 md:w-80">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink/20 group-focus-within:text-accent transition-colors" />
             <input 

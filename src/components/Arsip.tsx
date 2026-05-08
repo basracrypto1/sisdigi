@@ -54,11 +54,11 @@ export const Arsip: React.FC<Props> = ({ history, onSelect, onDelete }) => {
               placeholder="CARI SURAT, NAMA, ATAU NOMOR..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-11 sm:pl-12 pr-4 py-3 bg-white border border-line rounded-2xl text-[9px] sm:text-[10px] uppercase font-bold tracking-widest focus:border-accent outline-none shadow-sm transition-all"
+              className="w-full pl-11 sm:pl-12 pr-4 py-3 bg-paper border border-line rounded-2xl text-[9px] sm:text-[10px] uppercase font-bold tracking-widest focus:border-accent outline-none shadow-sm transition-all"
             />
           </div>
           
-          <div className="flex bg-white border border-line rounded-2xl p-1 shadow-sm shrink-0 self-end sm:self-auto">
+          <div className="flex bg-paper border border-line rounded-2xl p-1 shadow-sm shrink-0 self-end sm:self-auto">
             <button 
               onClick={() => setViewMode('list')}
               className={`p-2 rounded-xl transition-all ${viewMode === 'list' ? 'bg-accent text-white' : 'text-ink/20 hover:text-accent'}`}
@@ -76,11 +76,11 @@ export const Arsip: React.FC<Props> = ({ history, onSelect, onDelete }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto no-scrollbar pb-20">
+      <div className="flex-1 overflow-y-auto pb-20">
         {filtered.length > 0 ? (
           viewMode === 'list' ? (
-            <div className="bg-white border border-line rounded-2xl sm:rounded-[2.5rem] overflow-hidden shadow-sm">
-              <div className="overflow-x-auto no-scrollbar">
+            <div className="bg-paper border border-line rounded-2xl sm:rounded-[2.5rem] overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse min-w-[600px] md:min-w-0">
                   <thead>
                     <tr className="border-b border-line bg-bg/30">
@@ -138,7 +138,7 @@ export const Arsip: React.FC<Props> = ({ history, onSelect, onDelete }) => {
                   layout
                   key={letter.id}
                   onClick={() => onSelect(letter)}
-                  className="bg-white border border-line rounded-[2rem] p-6 hover:shadow-2xl hover:shadow-accent/5 hover:-translate-y-1 transition-all group cursor-pointer overflow-hidden relative"
+                  className="bg-paper border border-line rounded-[2rem] p-6 hover:shadow-2xl hover:shadow-accent/5 hover:-translate-y-1 transition-all group cursor-pointer overflow-hidden relative"
                 >
                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                     <FileText className="w-16 h-16 text-accent -rotate-12" />
@@ -186,7 +186,7 @@ export const Arsip: React.FC<Props> = ({ history, onSelect, onDelete }) => {
             </div>
           )
         ) : (
-          <div className="flex flex-col items-center justify-center py-40 border-2 border-dashed border-line rounded-[3rem] bg-white/50">
+          <div className="flex flex-col items-center justify-center py-40 border-2 border-dashed border-line rounded-[3rem] bg-paper/50">
             <div className="w-20 h-20 bg-bg rounded-3xl flex items-center justify-center mb-6">
               <Archive className="w-10 h-10 text-ink/10" />
             </div>

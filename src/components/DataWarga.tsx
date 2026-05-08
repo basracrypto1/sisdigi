@@ -307,7 +307,7 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
               />
               <button 
                 disabled={isImporting}
-                className="w-full flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-line text-ink/60 rounded-xl sm:rounded-2xl font-black text-[8px] sm:text-[9px] uppercase tracking-[1px] sm:tracking-[2px] transition-all hover:bg-ink hover:text-white disabled:opacity-30"
+                className="w-full flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-paper border border-line text-ink/60 rounded-xl sm:rounded-2xl font-black text-[8px] sm:text-[9px] uppercase tracking-[1px] sm:tracking-[2px] transition-all hover:bg-ink hover:text-white disabled:opacity-30"
               >
                 {isImporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                 <span className="hidden xs:inline">IMPOR CSV</span>
@@ -326,7 +326,7 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
             <button 
               onClick={handleExport}
               disabled={isExporting || citizens.length === 0}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-white border border-line text-ink/60 rounded-xl sm:rounded-2xl font-black text-[8px] sm:text-[9px] uppercase tracking-[1px] sm:tracking-[2px] transition-all hover:bg-ink hover:text-white disabled:opacity-30"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-3 bg-paper border border-line text-ink/60 rounded-xl sm:rounded-2xl font-black text-[8px] sm:text-[9px] uppercase tracking-[1px] sm:tracking-[2px] transition-all hover:bg-ink hover:text-white disabled:opacity-30"
             >
               <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden xs:inline">EKSPOR CSV</span>
@@ -340,7 +340,7 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
               placeholder="CARI NAMA ATAU NIK..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-11 sm:pl-12 pr-4 py-2.5 sm:py-3 bg-white border border-line rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] uppercase font-bold tracking-widest focus:border-accent outline-none shadow-sm transition-all"
+              className="w-full pl-11 sm:pl-12 pr-4 py-2.5 sm:py-3 bg-paper border border-line rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] uppercase font-bold tracking-widest focus:border-accent outline-none shadow-sm transition-all"
             />
           </div>
           <button 
@@ -357,7 +357,7 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
       </div>
 
       {/* Grid List */}
-      <div className="flex-1 overflow-y-auto no-scrollbar pb-20">
+      <div className="flex-1 overflow-y-auto pb-20">
         {filtered.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {filtered.map((citizen) => (
@@ -366,7 +366,7 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
                 key={citizen.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white border border-line rounded-3xl p-6 hover:shadow-2xl hover:shadow-accent/5 hover:-translate-y-1 transition-all group relative overflow-hidden"
+                className="bg-paper border border-line rounded-3xl p-6 hover:shadow-2xl hover:shadow-accent/5 hover:-translate-y-1 transition-all group relative overflow-hidden"
               >
                 <div className="absolute top-0 right-0 w-24 h-24 bg-accent/5 rounded-bl-[4rem] -mr-4 -mt-4 transition-all group-hover:scale-150" />
                 
@@ -433,7 +433,7 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-40 border-2 border-dashed border-line rounded-[3rem] bg-white/50">
+          <div className="flex flex-col items-center justify-center py-40 border-2 border-dashed border-line rounded-[3rem] bg-paper/50">
             <div className="w-20 h-20 bg-bg rounded-3xl flex items-center justify-center mb-6">
               <User className="w-10 h-10 text-ink/10" />
             </div>
@@ -510,7 +510,7 @@ export const DataWarga: React.FC<Props> = ({ onSelectCitizen }) => {
                           className="absolute inset-0 opacity-0 cursor-pointer z-10"
                           disabled={isScanning}
                         />
-                        <div className="w-full py-4 border-2 border-dashed border-accent/20 rounded-2xl flex items-center justify-center gap-3 bg-white hover:bg-accent/5 transition-all">
+                        <div className="w-full py-4 border-2 border-dashed border-accent/20 rounded-2xl flex items-center justify-center gap-3 bg-paper hover:bg-accent/5 transition-all">
                           <Scan className="w-4 h-4 text-accent" />
                           <span className="text-[9px] font-black uppercase tracking-[2px] text-accent">PILIH FOTO ATAU AMBIL GAMBAR KTP</span>
                         </div>

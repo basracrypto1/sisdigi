@@ -80,8 +80,8 @@ export const Settings: React.FC<Props> = ({ currentData, onUpdateDefaults, onCle
               className={`
                 w-full flex items-center gap-4 px-5 py-5 rounded-2xl transition-all group
                 ${activeTab === tab.id 
-                  ? 'bg-white border-accent shadow-xl shadow-accent/5' 
-                  : 'text-ink/40 hover:bg-white'}
+                  ? 'bg-paper border-accent shadow-xl shadow-accent/5' 
+                  : 'text-ink/40 hover:bg-paper'}
               `}
             >
               <tab.icon className={`w-5 h-5 ${activeTab === tab.id ? 'text-accent' : 'text-ink/20'}`} />
@@ -93,7 +93,7 @@ export const Settings: React.FC<Props> = ({ currentData, onUpdateDefaults, onCle
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 bg-white border border-line rounded-[3rem] p-8 sm:p-12 overflow-y-auto no-scrollbar shadow-sm">
+        <div className="flex-1 bg-paper border border-line rounded-[3rem] p-8 sm:p-12 overflow-y-auto shadow-sm">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -219,7 +219,7 @@ export const Settings: React.FC<Props> = ({ currentData, onUpdateDefaults, onCle
                         onClick={() => setConfig({ ...config, googleSheetEnabled: !config.googleSheetEnabled })}
                         className={`w-12 h-6 rounded-full transition-all relative ${config.googleSheetEnabled ? 'bg-accent' : 'bg-line'}`}
                       >
-                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${config.googleSheetEnabled ? 'left-7' : 'left-1'}`} />
+                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-paper transition-all ${config.googleSheetEnabled ? 'left-7' : 'left-1'}`} />
                       </button>
                     </div>
 
@@ -268,7 +268,7 @@ export const Settings: React.FC<Props> = ({ currentData, onUpdateDefaults, onCle
                             <p className="text-[7px] font-bold text-ink/30 uppercase mt-0.5">Kembalikan counter ke 1</p>
                           </div>
                         </div>
-                        <button className="w-full py-3 bg-white border border-line rounded-xl text-[9px] font-black uppercase tracking-widest text-ink/40 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all">
+                        <button className="w-full py-3 bg-paper border border-line rounded-xl text-[9px] font-black uppercase tracking-widest text-ink/40 hover:bg-orange-500 hover:text-white hover:border-orange-500 transition-all">
                           RESET NOMOR
                         </button>
                       </div>
@@ -283,7 +283,7 @@ export const Settings: React.FC<Props> = ({ currentData, onUpdateDefaults, onCle
                             <p className="text-[7px] font-bold text-ink/30 uppercase mt-0.5">Wipe Out Database</p>
                           </div>
                         </div>
-                        <button onClick={onClearDatabase} className="w-full py-3 bg-white border border-line rounded-xl text-[9px] font-black uppercase tracking-widest text-ink/40 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all">
+                        <button onClick={onClearDatabase} className="w-full py-3 bg-paper border border-line rounded-xl text-[9px] font-black uppercase tracking-widest text-ink/40 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all">
                           WIPE DATA
                         </button>
                       </div>

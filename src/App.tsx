@@ -13,6 +13,7 @@ import { Sidebar, PageId } from './components/Sidebar';
 import { DataWarga } from './components/DataWarga';
 import { Arsip } from './components/Arsip';
 import { Settings } from './components/Settings';
+import { AIBannerGenerator } from './components/AIBannerGenerator';
 import { generateWordLetter } from './lib/wordGenerator';
 import { generateLetterNumber } from './lib/utils';
 import { Menu, Download, FileText, CheckCircle2, RefreshCw, History, Heart, X, Sparkles, Layout, Edit3, LayoutDashboard, LogIn, LogOut, User as UserIcon, Loader2, Globe } from 'lucide-react';
@@ -269,9 +270,17 @@ export default function App() {
 
   return (
     <div className="flex h-screen max-w-[2000px] mx-auto bg-bg text-ink font-sans transition-colors duration-500 overflow-hidden shadow-2xl relative">
-      <Sidebar activePage={currentPage} onPageChange={setCurrentPage} isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} user={user} onLogout={handleLogout} />
+      <Sidebar 
+        activePage={currentPage} 
+        onPageChange={setCurrentPage} 
+        isOpen={isSidebarOpen} 
+        onOpen={() => setIsSidebarOpen(true)}
+        onClose={() => setIsSidebarOpen(false)} 
+        user={user} 
+        onLogout={handleLogout} 
+      />
       <div className="flex-1 flex flex-col h-full overflow-hidden relative lg:pl-72">
-        <header className="lg:hidden h-16 bg-white border-b border-line flex items-center justify-between px-6 z-50">
+        <header className="lg:hidden h-16 bg-paper border-b border-line flex items-center justify-between px-4 sm:px-6 z-50 sticky top-0">
           <button onClick={() => setIsSidebarOpen(true)} className="p-2 -ml-2 text-ink hover:text-accent font-bold">
             <Menu className="w-6 h-6" />
           </button>
@@ -279,11 +288,11 @@ export default function App() {
             <h1 className="font-display text-base sm:text-lg font-black tracking-tight uppercase leading-none">
               SIS<span className="text-accent underline decoration-accent/20">DIGI</span>
             </h1>
-            <span className="text-[7px] font-bold text-accent uppercase tracking-[2px] mt-1">
-              {currentPage === 'dashboard' ? 'Dashboard' : 
-               currentPage === 'buat-surat' ? 'Buat Surat' :
+            <span className="text-[7px] font-black text-accent uppercase tracking-[2px] mt-1">
+              {currentPage === 'dashboard' ? 'Overview' : 
+               currentPage === 'buat-surat' ? 'Generator' :
                currentPage === 'warga' ? 'Database' :
-               currentPage === 'arsip' ? 'Diterbitkan' : 'Pengaturan'}
+               currentPage === 'arsip' ? 'Archives' : 'Settings'}
             </span>
           </div>
           <div className="w-10" />
@@ -292,7 +301,7 @@ export default function App() {
         <div className="flex-1 h-full overflow-hidden relative bg-bg">
           <AnimatePresence mode="wait">
             {currentPage === 'dashboard' && (
-              <motion.div key="dashboard" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="h-full overflow-y-auto no-scrollbar">
+              <motion.div key="dashboard" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="h-full overflow-y-auto">
                 <Dashboard history={history} fullPage onClose={() => {}} onStartWriting={() => setCurrentPage('buat-surat')} />
               </motion.div>
             )}
@@ -306,8 +315,13 @@ export default function App() {
                 <Arsip history={history} onSelect={loadFromHistory} onDelete={deleteFromHistory} />
               </motion.div>
             )}
+            {currentPage === 'banner-generator' && (
+              <motion.div key="banner-generator" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full overflow-hidden">
+                <AIBannerGenerator />
+              </motion.div>
+            )}
             {currentPage === 'settings' && (
-              <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full overflow-y-auto no-scrollbar">
+              <motion.div key="settings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="h-full overflow-y-auto">
                 <Settings currentData={data} onUpdateDefaults={handleUpdateSettings} onClearDatabase={clearDatabase} />
               </motion.div>
             )}
@@ -321,7 +335,7 @@ export default function App() {
                     <Layout className="w-3.5 h-3.5" /> Pratinjau
                   </button>
                 </div>
-                <aside className={`w-full lg:w-[480px] h-full flex flex-col bg-bg border-r border-line overflow-y-auto no-scrollbar ${activeTab === 'preview' ? 'hidden lg:flex' : 'flex'}`}>
+                <aside className={`w-full lg:w-[480px] h-full flex flex-col bg-bg border-r border-line overflow-y-auto ${activeTab === 'preview' ? 'hidden lg:flex' : 'flex'}`}>
                   <div className="p-4 sm:p-6 md:p-8 lg:p-10 shrink-0"><LetterForm ref={formRef} data={data} onChange={updateData} onRefreshNumber={handleRefreshNumber} onFinish={() => setActiveTab('preview')} /></div>
                   <div className="p-6 sm:p-10 pt-0 space-y-3 mt-auto border-t border-line/10 bg-bg/50">
                     <button onClick={handleReset} className="w-full py-4.5 bg-accent/5 border border-accent/20 text-accent rounded-2xl font-black text-[10px] tracking-widest hover:bg-accent hover:text-white transition-all flex items-center justify-center gap-3 uppercase shadow-sm">
@@ -329,7 +343,7 @@ export default function App() {
                     </button>
                   </div>
                 </aside>
-                <main className={`flex-1 h-full bg-preview-bg overflow-y-auto no-scrollbar ${activeTab === 'edit' ? 'hidden lg:block' : 'block'}`}>
+                <main className={`flex-1 h-full bg-preview-bg overflow-y-auto ${activeTab === 'edit' ? 'hidden lg:block' : 'block'}`}>
                   <div className="fixed bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 sm:gap-3 z-50 lg:left-auto lg:right-10 lg:translate-x-0 w-[90%] sm:w-auto">
                     <button onClick={handleDownload} disabled={isGenerating} className="flex-1 sm:flex-none h-14 px-10 sm:px-16 bg-accent border border-accent/20 text-white rounded-2xl font-black text-xs tracking-[2px] hover:bg-accent/90 transition-all disabled:opacity-40 shadow-2xl flex items-center justify-center gap-3 uppercase">
                       {isGenerating ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />} UNDUH WORD (.DOCX)

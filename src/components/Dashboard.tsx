@@ -18,7 +18,7 @@ interface Props {
   fullPage?: boolean;
 }
 
-const COLORS = ['#F27D26', '#141414', '#9e9e9e', '#E4E3E0', '#5A5A40'];
+const COLORS = ['#F27D26', '#F5F5F0', '#9e9e9e', '#E4E3E0', '#5A5A40'];
 
 export const Dashboard: React.FC<Props> = ({ 
   history, 
@@ -103,7 +103,7 @@ export const Dashboard: React.FC<Props> = ({
         {!fullPage && (
           <button 
             onClick={onClose}
-            className="p-2.5 bg-white border border-line rounded-xl text-ink/40 hover:text-ink hover:border-ink transition-all shadow-sm group"
+            className="p-2.5 bg-paper border border-line rounded-xl text-ink/40 hover:text-ink hover:border-ink transition-all shadow-sm group"
           >
             <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
           </button>
@@ -111,10 +111,10 @@ export const Dashboard: React.FC<Props> = ({
       </div>
 
       {/* Content - Compact */}
-      <div className={`flex-1 overflow-y-auto no-scrollbar ${fullPage ? 'pb-20' : 'pb-6'} space-y-6`}>
+      <div className={`flex-1 overflow-y-auto ${fullPage ? 'pb-20' : 'pb-6'} space-y-6`}>
         {/* Top Key Stats - Smaller Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 sm:p-5 bg-white border border-line rounded-2xl shadow-sm group">
+          <div className="p-4 sm:p-5 bg-paper border border-line rounded-2xl shadow-sm group">
             <div className="flex justify-between items-start mb-2">
               <div className="p-2 bg-accent/5 rounded-lg text-accent">
                 <Calendar className="w-4 h-4" />
@@ -125,7 +125,7 @@ export const Dashboard: React.FC<Props> = ({
             <p className="text-[9px] font-bold text-ink/30 uppercase tracking-widest leading-none mt-1">Diterbitkan</p>
           </div>
 
-          <div className="p-4 sm:p-5 bg-white border border-line rounded-2xl shadow-sm group">
+          <div className="p-4 sm:p-5 bg-paper border border-line rounded-2xl shadow-sm group">
             <div className="flex justify-between items-start mb-2">
               <div className="p-2 bg-accent/5 rounded-lg text-accent">
                 <FileText className="w-4 h-4" />
@@ -136,7 +136,7 @@ export const Dashboard: React.FC<Props> = ({
             <p className="text-[9px] font-bold text-ink/30 uppercase tracking-widest leading-none mt-1">Riwayat</p>
           </div>
 
-          <div className="p-4 sm:p-5 bg-white border border-line rounded-2xl shadow-sm group">
+          <div className="p-4 sm:p-5 bg-paper border border-line rounded-2xl shadow-sm group">
             <div className="flex justify-between items-start mb-2">
               <div className="p-2 bg-accent/5 rounded-lg text-accent">
                 <TrendingUp className="w-4 h-4" />
@@ -163,7 +163,7 @@ export const Dashboard: React.FC<Props> = ({
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Daily Chart - Compact */}
-          <div className="p-6 bg-white border border-line rounded-3xl shadow-sm">
+          <div className="p-6 bg-paper border border-line rounded-3xl shadow-sm">
             <div className="flex items-center gap-2 mb-6">
               <BarChart2 className="w-4 h-4 text-accent" />
               <h3 className="text-[10px] font-black text-ink uppercase tracking-[2px]">Aktivitas Mingguan</h3>
@@ -182,7 +182,7 @@ export const Dashboard: React.FC<Props> = ({
           </div>
 
           {/* Type breakdown - Compact */}
-          <div className="p-6 bg-white border border-line rounded-3xl shadow-sm">
+          <div className="p-6 bg-paper border border-line rounded-3xl shadow-sm">
             <div className="flex items-center gap-2 mb-6">
               <PieIcon className="w-4 h-4 text-accent" />
               <h3 className="text-[10px] font-black text-ink uppercase tracking-[2px]">Segmentasi Surat</h3>
@@ -217,7 +217,7 @@ export const Dashboard: React.FC<Props> = ({
         
         {/* Dashboard Tools - Compact */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="p-6 bg-white border border-line rounded-3xl shadow-sm">
+          <div className="p-6 bg-paper border border-line rounded-3xl shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <ShieldCheck className="w-4 h-4 text-accent" />
               <h3 className="text-[10px] font-black text-ink uppercase tracking-[2px]">Validasi NIK</h3>
@@ -239,7 +239,7 @@ export const Dashboard: React.FC<Props> = ({
             </div>
           </div>
 
-          <div className="p-6 bg-white border border-line rounded-3xl shadow-sm">
+          <div className="p-6 bg-paper border border-line rounded-3xl shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <Calculator className="w-4 h-4 text-accent" />
               <h3 className="text-[10px] font-black text-ink uppercase tracking-[2px]">Asisten Waktu</h3>
@@ -283,7 +283,7 @@ export const Dashboard: React.FC<Props> = ({
            
            <div className="space-y-2">
               {history.slice(-3).reverse().map((letter, i) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-white border border-line rounded-xl hover:border-accent/30 transition-all group">
+                <div key={i} className="flex items-center justify-between p-3 bg-paper border border-line rounded-xl hover:border-accent/30 transition-all group">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-bg group-hover:bg-accent/5 rounded-lg flex items-center justify-center text-ink/20 group-hover:text-accent transition-all">
                       <FileText className="w-4 h-4" />
@@ -303,7 +303,7 @@ export const Dashboard: React.FC<Props> = ({
       </div>
       
       {/* Footer Credit - Minimal */}
-      <div className="py-4 bg-white border-t border-line flex justify-center opacity-30">
+      <div className="py-4 bg-paper border-t border-line flex justify-center opacity-30">
         <p className="text-[7px] font-black uppercase tracking-[3px]">DESA TANAH MERAH LAOK • ALPHA RELEASE 2.0</p>
       </div>
     </div>
@@ -324,7 +324,7 @@ export const Dashboard: React.FC<Props> = ({
         initial={{ scale: 0.98, opacity: 0, y: 10 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.98, opacity: 0, y: 10 }}
-        className="bg-white w-full max-w-4xl max-h-[85vh] rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col relative"
+        className="bg-paper w-full max-w-4xl max-h-[85vh] rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] overflow-hidden flex flex-col relative"
       >
         {Content}
       </motion.div>

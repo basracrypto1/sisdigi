@@ -17,6 +17,8 @@
   --color-line: rgba(0, 0, 0, 0.1);
   --color-preview-bg: #E8E8E2;
 
+  --color-accent: #2D5A27; /* Fallback for variable color */
+  
   --animate-update-flash: update-flash 1s ease-out;
 
   @keyframes update-flash {

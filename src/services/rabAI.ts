@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 
 interface RabInput {
   judul: string;
@@ -25,28 +25,11 @@ export const generateRabAI = async (input: RabInput) => {
 
   INSTRUKSI KHUSUS:
   1. Bagikan total anggaran secara proporsional dan masuk akal sesuai standar harga di Indonesia saat ini.
-  2. Pastikan TOTAL AKHIR dari semua item rincian TEPAT SAMA dengan nominal Rp ${input.total_anggaran}. Jangan lebih, jangan kurang.
-  3. Gunakan kategori yang relevan (misal: Material, Upah Pekerja, Operasional, Peralatan, Konsumsi, Biaya Tak Terduga).
-  4. Berikan output HANYA DALAM FORMAT JSON murni tanpa markdown, tanpa teks pembuka/penutup.
-  5. Format JSON harus seperti ini:
-  {
-    "judul": "${input.judul}",
-    "total_anggaran": ${input.total_anggaran},
-    "jenis": "${input.jenis}",
-    "items": [
-      {
-        "nama_item": "Semen PC 50kg",
-        "qty": 50,
-        "satuan": "Zak",
-        "harga_satuan": 65000,
-        "subtotal": 3250000
-      }
-    ]
-  }
-
-  Pastikan semua angka (qty, harga_satuan, subtotal) adalah numerik, bukan string.
-  Pastikan subtotal = qty * harga_satuan.
-  Pastikan jumlah total seluruh subtotal = ${input.total_anggaran}.
+  2. Pastikan TOTAL AKHIR dari semua item rincian TEPAT SAMA dengan nominal Rp ${input.total_anggaran}.
+  3. Gunakan kategori yang relevan.
+  4. Berikan output dalam format JSON sesuai schema.
+  5. Pastikan subtotal = qty * harga_satuan.
+  6. Pastikan jumlah total seluruh subtotal = ${input.total_anggaran}.
   `;
 
   try {
@@ -54,7 +37,30 @@ export const generateRabAI = async (input: RabInput) => {
       model: "gemini-3-flash-preview",
       contents: prompt,
       config: {
-        responseMimeType: "application/json"
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          required: ["judul", "total_anggaran", "jenis", "items"],
+          properties: {
+            judul: { type: Type.STRING },
+            total_anggaran: { type: Type.NUMBER },
+            jenis: { type: Type.STRING },
+            items: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                required: ["nama_item", "qty", "satuan", "harga_satuan", "subtotal"],
+                properties: {
+                  nama_item: { type: Type.STRING },
+                  qty: { type: Type.NUMBER },
+                  satuan: { type: Type.STRING },
+                  harga_satuan: { type: Type.NUMBER },
+                  subtotal: { type: Type.NUMBER }
+                }
+              }
+            }
+          }
+        }
       }
     });
 
@@ -62,7 +68,7 @@ export const generateRabAI = async (input: RabInput) => {
     if (!text) throw new Error("AI tidak memberikan respon teks.");
     const data = JSON.parse(text);
 
-    // Final balancing check
+    // Final balancing check to ensure precision
     let currentTotal = data.items.reduce((sum: number, item: any) => sum + item.subtotal, 0);
     const diff = input.total_anggaran - currentTotal;
 
@@ -72,6 +78,9 @@ export const generateRabAI = async (input: RabInput) => {
 
     return data;
   } catch (error: any) {
+    if (error?.message?.includes('429') || error?.message?.includes('RESOURCE_EXHAUSTED')) {
+      throw new Error("Quota AI habis. Silakan coba lagi nanti.");
+    }
     console.error("Gemini AI API Error:", error);
     throw new Error("Gagal berkomunikasi dengan AI. " + error.message);
   }

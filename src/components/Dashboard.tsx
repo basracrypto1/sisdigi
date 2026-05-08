@@ -96,8 +96,8 @@ export const Dashboard: React.FC<Props> = ({
             <LayoutDashboard className="w-5 h-5" />
           </div>
           <div>
-            <h2 className={`${fullPage ? 'text-2xl sm:text-4xl' : 'text-lg'} font-black text-ink uppercase tracking-tight leading-none`}>Statistik Sistem</h2>
-            <p className="text-[8px] sm:text-[10px] uppercase tracking-[2px] font-bold text-ink/30 mt-1 font-heading">Ringkasan Aktivitas</p>
+            <h2 className={`${fullPage ? 'text-2xl sm:text-4xl' : 'text-lg'} font-black text-ink uppercase tracking-tight leading-none`}>SIS<span className="text-accent underline decoration-accent/20">DIGI</span> Dashboard</h2>
+            <p className="text-[8px] sm:text-[10px] uppercase tracking-[2px] font-black text-accent mt-1 leading-none">DESA TANAH MERAH LAOK</p>
           </div>
         </div>
         {!fullPage && (

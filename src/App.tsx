@@ -289,11 +289,11 @@ export default function App() {
             <h1 className="font-display text-base sm:text-lg font-black tracking-tight uppercase leading-none">
               SIS<span className="text-accent underline decoration-accent/20">DIGI</span>
             </h1>
-            <span className="text-[7px] font-black text-accent uppercase tracking-[2px] mt-1">
-              {currentPage === 'dashboard' ? 'Overview' : 
-               currentPage === 'buat-surat' ? 'Generator' :
-               currentPage === 'warga' ? 'Database' :
-               currentPage === 'arsip' ? 'Archives' : 'Settings'}
+            <p className="text-[6px] font-black text-accent uppercase tracking-[2px] mt-0.5 leading-none">
+              DESA TANAH MERAH LAOK
+            </p>
+            <span className="text-[5px] font-bold text-ink/30 uppercase tracking-[1px] mt-1 leading-none italic">
+              SISTEM SURAT DIGITAL
             </span>
           </div>
           <div className="w-10" />
@@ -379,7 +379,8 @@ export default function App() {
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-paper rounded-[2rem] p-10 max-w-md w-full relative">
               <div className="text-center">
                 <Heart className="w-16 h-16 text-accent mx-auto mb-6" />
-                <h2 className="text-3xl font-black text-ink uppercase mb-6 leading-none">Salam Hangat!</h2>
+                <h2 className="text-3xl font-black text-ink uppercase mb-2 leading-none">Salam Hangat!</h2>
+                <p className="text-[10px] font-black text-accent uppercase tracking-[3px] mb-6">DESA TANAH MERAH LAOK</p>
                 <p className="text-ink/60 font-medium mb-10 text-lg">Semoga hari Anda penuh berkah, sehat, dan rezeki yang melimpah.</p>
                 <button onClick={closeGreeting} className="w-full py-5 bg-ink text-paper rounded-2xl font-bold uppercase text-[10px] tracking-widest hover:bg-accent transition-colors">MULAI EKSPLORASI</button>
               </div>

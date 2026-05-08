@@ -96,7 +96,8 @@ export const Sidebar: React.FC<Props> = ({
             <h1 className="font-display text-2xl leading-none font-black text-ink tracking-tight uppercase">
               SIS<span className="text-accent underline decoration-accent/20 decoration-2 underline-offset-2">DIGI</span>
             </h1>
-            <p className="text-[7px] uppercase tracking-[3px] font-bold text-ink/30 font-heading">SISTEM SURAT DIGITAL</p>
+            <p className="text-[7px] uppercase tracking-[2px] font-bold text-ink/40 font-heading mt-1">SISTEM SURAT DIGITAL</p>
+            <p className="text-[6px] uppercase tracking-[3px] font-black text-accent mt-0.5">DESA TANAH MERAH LAOK</p>
           </div>
           <button onClick={onClose} className="lg:hidden p-2 text-ink/20 hover:text-ink transition-colors">
             <X className="w-5 h-5" />
@@ -149,7 +150,7 @@ export const Sidebar: React.FC<Props> = ({
           <div className="flex flex-col items-center opacity-30 gap-1 text-center">
             <span className="text-[7px] uppercase tracking-[3px] font-bold text-ink">Digitalization by</span>
             <span className="text-[9px] font-bold text-ink transition-colors underline decoration-accent/20 uppercase tracking-widest leading-relaxed">
-              Fahrul Anam <br/> DESA TANAH MERAH LAOK
+              Fahrul Anam
             </span>
           </div>
         </div>

@@ -79,7 +79,7 @@ export default function App() {
         defaults.desa = 'Tanah Merah Laok';
         defaults.alamatDesa = 'Jl. Raya Desa Tanah Merah Laok, Tanah Merah';
         defaults.jabatanKades = 'Kepala Desa';
-        defaults.namaKades = 'AZMY HAFIDZ HARIRI, SE';
+        defaults.namaKades = 'NAFIS BASKARA';
         storage.saveSettings({ defaults });
       }
       setData(prev => ({ ...prev, ...defaults }));
